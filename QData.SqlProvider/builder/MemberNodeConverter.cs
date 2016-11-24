@@ -21,7 +21,7 @@ namespace QData.SqlProvider.builder
 
         public MemberNodeConverter(Mapping mapping)
         {
-            Mapping = mapping;
+            this.Mapping = mapping;
         }
 
         #endregion
@@ -38,15 +38,15 @@ namespace QData.SqlProvider.builder
 
         public Expression ConvertToMemberExpression(ParameterExpression parameter, QNode node)
         {
-            MemberExpression = parameter;
-            Mapping.SetCurrentMap(parameter.Type);
+            this.MemberExpression = parameter;
+            this.Mapping.SetCurrentMap(parameter.Type);
 
             var members = Convert.ToString(node.Value).Split('.');
             foreach (var member in members)
             {
-                VisitMember(member);
+                this.VisitMember(member);
             }
-            return MemberExpression;
+            return this.MemberExpression;
         }
 
 
@@ -63,7 +63,7 @@ namespace QData.SqlProvider.builder
                     property = bindingPaar[0];
                     root.Value = bindingPaar[1];
                 }
-                var member = ConvertToMemberExpression(parameter, root);
+                var member = this.ConvertToMemberExpression(parameter, root);
                 result.Add(property, member);
                 root = root.Left;
             } while (root != null);
@@ -73,7 +73,7 @@ namespace QData.SqlProvider.builder
         protected void VisitMember(string member)
         {
             var mapped = Mapping.GetMapNameForMember(member);
-            MemberExpression = Expression.Property(MemberExpression, mapped);
+            this.MemberExpression = Expression.Property(this.MemberExpression, mapped);
         }
 
         #endregion

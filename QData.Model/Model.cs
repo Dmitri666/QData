@@ -17,17 +17,21 @@ using QData.SqlProvider;
 
 namespace QData.Model
 {
-    public class Model
+    using System;
+
+    using QData.Common;
+
+    public class Model<TM>
+        where TM : IModelEntity
     {
         #region Constructors and Destructors
 
         private readonly MapperConfiguration mapperConfiguration;
-
+        private Type SourceType { get; set; }
         
-        public Model(MapperConfiguration mapping,DbSet set)
+        public Model(MapperConfiguration mapping)
 
         {
-            var e = set.Create();
             this.mapperConfiguration = mapping;
         }
 
@@ -53,13 +57,13 @@ namespace QData.Model
                 }
                 return result;
             }
-            var target = this.mapperConfiguration.GetAllTypeMaps()
-                .FirstOrDefault(x => x.SourceType == query.ElementType)
-                .DestinationType;
-            var listType = typeof (IEnumerable<>);
-            var sourceType = listType.MakeGenericType(query.ElementType);
-            var targetType = listType.MakeGenericType(target);
-            return this.mapperConfiguration.CreateMapper().Map(data, sourceType, targetType);
+            //var target = this.mapperConfiguration.GetAllTypeMaps()
+            //    .FirstOrDefault(x => x.SourceType == query.ElementType)
+            //    .DestinationType;
+            //var listType = typeof (IEnumerable<>);
+            //var sourceType = listType.MakeGenericType(query.ElementType);
+            //var targetType = listType.MakeGenericType(target);
+            return this.mapperConfiguration.CreateMapper().Map<IEnumerable<TM>>(data);
 
         }
 

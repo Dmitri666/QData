@@ -50,9 +50,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QData.Admin.Contract\QData.Admin.Contract.csproj">
-      <Project>{c727ae5b-32aa-4795-abe7-40336be5f1ed}</Project>
-      <Name>QData.Admin.Contract</Name>
+    <ProjectReference Include="..\QData.Common\QData.Common.csproj">
+      <Project>{517f9bd0-4757-4eb0-af01-7f8a76e6c303}</Project>
+      <Name>QData.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Qdata.Json.Contract\Qdata.Json.Contract.csproj">
       <Project>{25e33edf-5c4c-450c-b11a-35ecc66155f9}</Project>

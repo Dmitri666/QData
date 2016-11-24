@@ -1,10 +1,14 @@
-﻿using System;
-using System.Linq;
-using AutoMapper;
-using QData.Common;
-
-namespace QData.SqlProvider.builder
+﻿namespace QData.SqlProvider.builder
 {
+    using System;
+    using System.Linq;
+
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions.Impl;
+
+    using QData.Common;
+    using QData.LinqConverter;
+
     public class Mapping
     {
         private readonly MapperConfiguration mapperConfiguration;
@@ -12,47 +16,57 @@ namespace QData.SqlProvider.builder
         public Mapping(MapperConfiguration mapperConfiguration)
         {
             this.mapperConfiguration = mapperConfiguration;
-            Maps = this.mapperConfiguration.GetAllTypeMaps();
         }
 
-        private TypeMap[] Maps { get; set; }
         private TypeMap CurrentMap { get; set; }
+
         public bool EnableMapping { get; set; }
 
         public void SetCurrentMap(Type sourceType)
         {
-            if (EnableMapping)
+            if (this.EnableMapping)
             {
-                CurrentMap =
-                    mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+                this.CurrentMap =
+                    this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
             }
         }
 
         public string GetMapNameForMember(string member)
         {
-            if (!EnableMapping)
+            if (!this.EnableMapping)
             {
                 return member;
             }
 
             var propertyMap =
-                CurrentMap.GetPropertyMaps()
+                this.CurrentMap.GetPropertyMaps()
                     .FirstOrDefault(
                         x => x.DestinationProperty.Name.Equals(member, StringComparison.CurrentCultureIgnoreCase));
-            if (propertyMap.DestinationPropertyType.IsGenericType
-                && typeof (IModelEntity).IsAssignableFrom(propertyMap.DestinationPropertyType.GenericTypeArguments[0]))
-            {
-                Type sourceType = propertyMap.CustomExpression != null ? propertyMap.CustomExpression.Body.Type.GenericTypeArguments[0] : propertyMap.SourceType.GenericTypeArguments[0];
 
-                CurrentMap =
-                    mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+            if (propertyMap.CustomExpression != null)
+            {
+                var c = new ExpressionConverter();
+                var node = c.Convert(propertyMap.CustomExpression);
             }
-            else if (typeof (IModelEntity).IsAssignableFrom(propertyMap.DestinationPropertyType))
-            {
-                Type sourceType = propertyMap.CustomExpression != null ? propertyMap.CustomExpression.Body.Type : propertyMap.SourceType;
 
-                CurrentMap =
-                    mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+            if (propertyMap.DestinationPropertyType.IsGenericType
+                && typeof(IModelEntity).IsAssignableFrom(propertyMap.DestinationPropertyType.GenericTypeArguments[0]))
+            {
+                var sourceType = propertyMap.CustomExpression != null
+                                     ? propertyMap.CustomExpression.Body.Type.GenericTypeArguments[0]
+                                     : propertyMap.SourceType.GenericTypeArguments[0];
+
+                this.CurrentMap =
+                    this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+            }
+            else if (typeof(IModelEntity).IsAssignableFrom(propertyMap.DestinationPropertyType))
+            {
+                var sourceType = propertyMap.CustomExpression != null
+                                     ? propertyMap.CustomExpression.Body.Type
+                                     : propertyMap.SourceType;
+
+                this.CurrentMap =
+                    this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
             }
 
             return propertyMap.SourceMember.Name;

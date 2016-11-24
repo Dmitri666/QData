@@ -69,6 +69,10 @@
       <Project>{25e33edf-5c4c-450c-b11a-35ecc66155f9}</Project>
       <Name>Qdata.Json.Contract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QData.LinqConverter\QData.LinqConverter.csproj">
+      <Project>{2a69873b-a671-4da6-bb14-f9839e07e386}</Project>
+      <Name>QData.LinqConverter</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
