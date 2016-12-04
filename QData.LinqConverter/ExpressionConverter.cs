@@ -271,14 +271,26 @@ namespace QData.LinqConverter
                 var node = new QNode() { Type = NodeType.Constant, Value = value };
                 this.Context.Push(node);
             }
+            else if (memberAccess.Expression.NodeType == ExpressionType.MemberAccess || memberAccess.Expression.NodeType == ExpressionType.Parameter)
+            {
+                var node = new QNode() {Type = NodeType.Member, Value = memberAccess.Member.Name};
+
+                if (memberAccess.Expression.NodeType == ExpressionType.MemberAccess)
+                {
+                    this.Visit(memberAccess.Expression);
+                    node.Left = this.Context.Pop();
+                    this.Context.Push(node);
+                }
+                else
+                {
+                    this.Context.Push(node);
+                }
+
+            }
             else
             {
-                var builder = new MemberNodeBuilder();
-                builder.Visit(memberAccess);
-                var node = new QNode() { Type = NodeType.Member, Value = builder.GetPath() };
-                this.Context.Push(node);
+                throw new Exception();
             }
-
             return memberAccess;
         }
 
@@ -293,23 +305,28 @@ namespace QData.LinqConverter
         /// </returns>
         protected override Expression VisitMemberInit(MemberInitExpression exp)
         {
-            QNode bindingNode = null;
-            for (int i = 0; i < exp.Bindings.Count; i++)
+            QNode lambdaNode = null;
+            foreach (var binding in exp.Bindings)
             {
-                var builder = new MemberNodeBuilder();
-                builder.Visit(((MemberAssignment)exp.Bindings[i]).Expression);
-                var node = new QNode() { Type = NodeType.Member, Value = exp.Bindings[i].Member.Name + ":" + builder.GetPath() };
-                if (bindingNode == null)
+                this.Visit(((MemberAssignment)binding).Expression);
+                var bindingNode = this.Context.Pop();
+                var node = new QNode()
                 {
-                    bindingNode = node;
+                    Type = NodeType.Member,
+                    Value = binding.Member.Name,
+                    Right = bindingNode
+                };
+                if (lambdaNode == null)
+                {
+                    lambdaNode = node;
                 }
                 else
                 {
-                    bindingNode.Left = node;
+                    lambdaNode.Left = node;
                 }
             }
 
-            this.Context.Push(bindingNode);
+            this.Context.Push(lambdaNode);
             return exp;
         }
 
@@ -404,25 +421,49 @@ namespace QData.LinqConverter
 
 
             // anonymes Type
-            QNode bindingNode = null;
+            QNode lambdaNode = null;
             for (int i = 0; i < exp.Members.Count; i++)
             {
-                var bindingProperty = exp.Members[i].Name;
-                var builder = new MemberNodeBuilder();
-                builder.Visit(exp.Arguments[i]);
-                var node = new QNode() { Type = NodeType.Member, Value = bindingProperty + ":" + builder.GetPath() };
-                if (bindingNode == null)
+                this.Visit(exp.Arguments[i]);
+                var bindingNode = this.Context.Pop();
+                var node = new QNode()
                 {
-                    bindingNode = node;
+                    Type = NodeType.Member,
+                    Value = exp.Members[i].Name,
+                    Right = bindingNode
+                };
+                if (lambdaNode == null)
+                {
+                    lambdaNode = node;
                 }
                 else
                 {
-                    bindingNode.Left = node;
+                    lambdaNode.Left = node;
                 }
             }
 
-            this.Context.Push(bindingNode);
+            this.Context.Push(lambdaNode);
             return exp;
+
+            ////QNode bindingNode = null;
+            //for (int i = 0; i < exp.Members.Count; i++)
+            //{
+            //    var bindingProperty = exp.Members[i].Name;
+            //    //var builder = new MemberNodeBuilder();
+            //    //builder.Visit(exp.Arguments[i]);
+            //    //var node = new QNode() { Type = NodeType.Member, Value = bindingProperty + ":" + builder.GetPath() };
+            //    //if (bindingNode == null)
+            //    //{
+            //    //    bindingNode = node;
+            //    //}
+            //    //else
+            //    //{
+            //    //    bindingNode.Left = node;
+            //    //}
+            //}
+
+            //this.Context.Push(bindingNode);
+            //return exp;
         }
 
         /// <summary>

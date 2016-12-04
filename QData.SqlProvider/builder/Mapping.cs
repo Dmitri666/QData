@@ -1,4 +1,6 @@
-﻿namespace QData.SqlProvider.builder
+﻿using System.Collections.Generic;
+
+namespace QData.SqlProvider.builder
 {
     using System;
     using System.Linq;
@@ -16,30 +18,48 @@
         public Mapping(MapperConfiguration mapperConfiguration)
         {
             this.mapperConfiguration = mapperConfiguration;
+            this.MapContext = new Stack<TypeMap>();
         }
+        private Stack<TypeMap> MapContext { get; set; }
 
         private TypeMap CurrentMap { get; set; }
 
+
         public bool EnableMapping { get; set; }
 
-        public void SetCurrentMap(Type sourceType)
+        public void EnterMapContext(Type sourceType)
         {
             if (this.EnableMapping)
             {
-                this.CurrentMap =
-                    this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+                var currentMap = this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+                this.MapContext.Push(currentMap);
             }
         }
 
-        public string GetMapNameForMember(string member)
+        public void LeaveMapContext()
+        {
+            if (this.EnableMapping)
+            {
+                this.MapContext.Pop();
+            }
+        }
+
+        public void Reset()
+        {
+            if (this.EnableMapping)
+            {
+                this.CurrentMap = this.MapContext.Peek();
+            }
+        }
+
+        public string Map(string member)
         {
             if (!this.EnableMapping)
             {
                 return member;
             }
 
-            var propertyMap =
-                this.CurrentMap.GetPropertyMaps()
+            var propertyMap = this.MapContext.Peek().GetPropertyMaps()
                     .FirstOrDefault(
                         x => x.DestinationProperty.Name.Equals(member, StringComparison.CurrentCultureIgnoreCase));
 
@@ -58,6 +78,7 @@
 
                 this.CurrentMap =
                     this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+                
             }
             else if (typeof(IModelEntity).IsAssignableFrom(propertyMap.DestinationPropertyType))
             {
@@ -67,6 +88,7 @@
 
                 this.CurrentMap =
                     this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
+                
             }
 
             return propertyMap.SourceMember.Name;

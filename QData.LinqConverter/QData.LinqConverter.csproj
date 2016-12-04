@@ -37,7 +37,6 @@
     <Compile Include="ConstantPlaceHolder.cs" />
     <Compile Include="ExpressionConverter.cs" />
     <Compile Include="IConstantPlaceHolder.cs" />
-    <Compile Include="MemberNodeBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

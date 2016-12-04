@@ -62,7 +62,7 @@ namespace QData.SqlProvider.builder
 
         private static void AcceptMember(QNode node, IQNodeVisitor visitor)
         {
-            //node.Left.Accept(visitor);
+            node.Left?.Accept(visitor);
             visitor.VisitMember(node);
         }
 

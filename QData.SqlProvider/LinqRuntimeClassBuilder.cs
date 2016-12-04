@@ -388,9 +388,7 @@ namespace QData.SqlProvider
 
         #endregion
 
-        
-
-        #region Methods
+            #region Methods
 
         /// <summary>
         /// The create dynamic class.

@@ -48,7 +48,6 @@
   <ItemGroup>
     <Compile Include="builder\IQNodeVisitor.cs" />
     <Compile Include="builder\Mapping.cs" />
-    <Compile Include="builder\MemberNodeConverter.cs" />
     <Compile Include="builder\QDescriptorConverter.cs" />
     <Compile Include="builder\QNodeExtentions.cs" />
     <Compile Include="ExpressionProvider.cs" />

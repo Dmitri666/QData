@@ -14,25 +14,69 @@
 
     public class QDescriptorConverter : IQNodeVisitor
     {
+        #region Fields
+
+        /// <summary>
+        ///     The count.
+        /// </summary>
+        private int parameterPrefix;
+
+        private int OderByCount { get; set; }
+
+        #endregion
+
+        #region Properties
+
+        public bool HasProjection { get; private set; }
+
+        private Mapping Mapper { get; }
+
+        private Expression Query { get; }
+
+        /// <summary>
+        ///     Gets the current.
+        /// </summary>
+        public Stack<Expression> ContextExpression { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the param expression.
+        /// </summary>
+        private Stack<ParameterExpression> ContextParameters { get; }
+
+        
+
+
+
+        #endregion
         public QDescriptorConverter(MapperConfiguration conf, Expression query)
         {
             this.ContextExpression = new Stack<Expression>();
             this.ContextParameters = new Stack<ParameterExpression>();
             this.Mapper = new Mapping(conf);
-            this.MemberNodeConverter = new MemberNodeConverter(this.Mapper);
             this.Query = query;
         }
 
         public void VisitMember(QNode node)
         {
-            var member = this.MemberNodeConverter.ConvertToMemberExpression(this.ContextParameters.Peek(), node);
-            this.ContextExpression.Push(member);
+            if (node.Left == null)
+            {
+                this.Mapper.Reset();
+                var mapped = this.Mapper.Map(Convert.ToString(node.Value));
+                this.ContextExpression.Push(Expression.PropertyOrField(this.ContextParameters.Peek(), mapped));
+            }
+            else
+            {
+                var mapped = this.Mapper.Map(Convert.ToString(node.Value));
+                this.ContextExpression.Push(Expression.PropertyOrField(this.ContextExpression.Pop(), mapped));
+            }
         }
 
         public void VisitQuerable(QNode node)
         {
             this.ContextExpression.Push(this.Query);
             this.Mapper.EnableMapping = true;
+            //this.Mapper.EnterMapContext(this.Query.Type.GenericTypeArguments[0]);
+            
         }
 
         public void VisitMethod(QNode node)
@@ -66,23 +110,36 @@
 
             var parameter = Expression.Parameter(parameterType, string.Format("x{0}", this.parameterPrefix++));
             this.ContextParameters.Push(parameter);
+            this.Mapper.EnterMapContext(parameterType);
         }
 
         public void LeaveContext(QNode node)
         {
             this.ContextParameters.Pop();
+            this.Mapper.LeaveMapContext();
         }
 
         public void VisitProjection(QNode node)
         {
             var left = this.ContextExpression.Pop();
 
+            var bindingNodes = new Dictionary<string,QNode>();
+            var selectedNode = node.Right;
+            while (selectedNode != null)
+            {
+                bindingNodes.Add(Convert.ToString(selectedNode.Value),selectedNode.Right);
+                selectedNode = selectedNode.Left;
+            }
+
             Type projectorType = null;
             var dynamicProperties = new List<DynamicProperty>();
-            var bindings1 = this.MemberNodeConverter.ConvertToBindings(this.ContextParameters.Peek(), node);
-            foreach (var binding in bindings1)
+            var bindingExpressions = new Dictionary<string, Expression>();
+            foreach (var bindingNode in bindingNodes)
             {
-                var property = new DynamicProperty(binding.Key, binding.Value.Type);
+                bindingNode.Value.Accept(this);
+                var member = this.ContextExpression.Pop();
+                bindingExpressions.Add(Convert.ToString(bindingNode.Key), member);
+                var property = new DynamicProperty(Convert.ToString(bindingNode.Key),member.Type);
                 dynamicProperties.Add(property);
             }
 
@@ -91,7 +148,7 @@
             var resultProperties = projectorType.GetProperties();
             var bindingsSource = new List<Expression>();
             var bindingsProperties = new List<PropertyInfo>();
-            foreach (var binding in bindings1)
+            foreach (var binding in bindingExpressions)
             {
                 bindingsProperties.Add(resultProperties.FirstOrDefault(x => x.Name == binding.Key));
                 bindingsSource.Add(binding.Value);
@@ -322,41 +379,6 @@
             throw new Exception(method.ToString());
         }
 
-        #region Fields
-
-        private readonly MemberNodeConverter MemberNodeConverter;
-
-        public Type SourceType { get; private set; }
-
-        public Type TargetType { get; private set; }
-
-        public bool HasProjection { get; private set; }
-
-        /// <summary>
-        ///     The count.
-        /// </summary>
-        private int parameterPrefix;
-
-        private int OderByCount { get; set; }
-
-        #endregion
-
-        #region Properties
-
-        private Mapping Mapper { get; }
-
-        private Expression Query { get; }
-
-        /// <summary>
-        ///     Gets the current.
-        /// </summary>
-        public Stack<Expression> ContextExpression { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the param expression.
-        /// </summary>
-        private Stack<ParameterExpression> ContextParameters { get; }
-
-        #endregion
+        
     }
 }
