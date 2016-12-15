@@ -27,8 +27,6 @@
 
         #region Properties
 
-        public bool HasProjection { get; private set; }
-
         private Mapping Mapper { get; }
 
         private Expression Query { get; }
@@ -170,29 +168,8 @@
 
             this.ContextExpression.Push(result);
 
-            this.HasProjection = true;
             this.Mapper.EnableMapping = false;
         }
-
-        //public void Visit(TakeNode node)
-        //{
-        //    var caller = this.ContextExpression.Pop();
-
-        //    var types = new List<Type>() { caller.Type.IsGenericType ? caller.Type.GenericTypeArguments[0] : caller.Type };
-        //    var exp = Expression.Call(typeof(Queryable), "Take", types.ToArray(), caller, Expression.Constant(node.Take));
-        //    this.ContextExpression.Push(exp);
-
-        //}
-
-        //public void Visit(SkipNode node)
-        //{
-        //    var caller = this.ContextExpression.Pop();
-
-        //    var types = new List<Type>() { caller.Type.IsGenericType ? caller.Type.GenericTypeArguments[0] : caller.Type };
-        //    var exp = Expression.Call(typeof(Queryable), "Skip", types.ToArray(), caller, Expression.Constant(node.Skip));
-        //    this.ContextExpression.Push(exp);
-
-        //}
 
         public void VisitConstant(QNode node)
         {
@@ -208,6 +185,13 @@
 
             var memberType = this.ContextExpression.Peek().Type;
 
+            //take skip
+            if (typeof(IQueryable).IsAssignableFrom(memberType))
+            {
+                var exp = Expression.Constant(Convert.ToInt32(node.Value));
+                this.ContextExpression.Push(exp);
+                return;
+            }
             if (valueType != memberType)
             {
                 if (node.Value.GetType().IsGenericType)
@@ -329,6 +313,17 @@
                 return Expression.Call(right, method, left);
             }
 
+            if (binary == BinaryType.Take)
+            {
+                var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
+                return Expression.Call(typeof(Queryable), "Take", types.ToArray(), left, right);
+            }
+
+            if (binary == BinaryType.Skip)
+            {
+                var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
+                return Expression.Call(typeof(Queryable), "Skip", types.ToArray(), left, right);
+            }
             throw new Exception(binary.ToString());
         }
 

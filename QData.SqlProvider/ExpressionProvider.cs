@@ -38,14 +38,10 @@ namespace QData.SqlProvider
 
         #region Public Methods and Operators
 
-        public Result ConvertToExpression(QDescriptor descriptor)
+        public Expression ConvertToExpression(QDescriptor descriptor)
         {
             descriptor.Root.Accept(this.converter);
-            return new Result()
-                       {
-                           Expression = this.converter.ContextExpression.Pop(),
-                           HasProjection = this.converter.HasProjection
-                       };
+            return this.converter.ContextExpression.Pop();
         }
 
         #endregion

@@ -13,5 +13,7 @@ namespace Qdata.Json.Contract
         public QNode Root { get; set; }
 
         public List<QNode> Include { get; set; }
+
+        public bool IsProjection { get; set; }
     }
 }

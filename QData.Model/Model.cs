@@ -39,15 +39,15 @@ namespace QData.Model
 
         #region Public Properties
 
-        public object Find(QDescriptor node, IQueryable query)
+        public object Find(QDescriptor descriptor, IQueryable query)
         {
 
             var provider = new ExpressionProvider(this.mapperConfiguration,query.Expression);
-            var epressionResult = provider.ConvertToExpression(node);
+            var epression = provider.ConvertToExpression(descriptor);
 
-            var data = query.Provider.CreateQuery(epressionResult.Expression);
+            var data = query.Provider.CreateQuery(epression);
 
-            if (epressionResult.HasProjection)
+            if (descriptor.IsProjection)
             {
                 List<object> result = new List<object>();
                 IEnumerator enumerator = data.GetEnumerator();
@@ -57,12 +57,7 @@ namespace QData.Model
                 }
                 return result;
             }
-            //var target = this.mapperConfiguration.GetAllTypeMaps()
-            //    .FirstOrDefault(x => x.SourceType == query.ElementType)
-            //    .DestinationType;
-            //var listType = typeof (IEnumerable<>);
-            //var sourceType = listType.MakeGenericType(query.ElementType);
-            //var targetType = listType.MakeGenericType(target);
+            
             return this.mapperConfiguration.CreateMapper().Map<IEnumerable<TM>>(data);
 
         }

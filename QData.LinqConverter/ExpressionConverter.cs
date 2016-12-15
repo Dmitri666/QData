@@ -36,6 +36,7 @@ namespace QData.LinqConverter
         #endregion
 
         #region Properties
+        public bool IsProjection { get; set; }
 
         /// <summary>
         ///     Gets or sets the context.
@@ -45,24 +46,6 @@ namespace QData.LinqConverter
         #endregion
 
         #region Public Methods and Operators
-
-        //public ProjectorNode Convert<TModelEntity>(Expression<Func<TModelEntity, TModelEntity>> exp) where TModelEntity : IModelEntity
-        //{
-        //    this.Visit(exp);
-        //    return (ProjectorNode)this.Context.Peek();
-        //}
-
-        //public ProjectorNode Convert<TModelEntity>(Expression<Func<TModelEntity, IClientProjector>> exp) where TModelEntity : IModelEntity
-        //{
-        //    this.Visit(exp);
-        //    return (ProjectorNode)this.Context.Peek();
-        //}
-
-        //public BNode Convert<TModelEntity>(Expression<Func<TModelEntity, bool>> exp) where TModelEntity : IModelEntity
-        //{
-        //    this.Visit(exp);
-        //    return (BNode)this.Context.Peek();
-        //}
 
         public QNode Convert(Expression exp)
         {
@@ -209,9 +192,10 @@ namespace QData.LinqConverter
         /// </returns>
         protected override Expression VisitConstant(ConstantExpression expr)
         {
-            if (expr.Type.IsGenericType && typeof(IModelEntity).IsAssignableFrom(expr.Type.GenericTypeArguments[0]))
+            if (typeof(IQSet).IsAssignableFrom(expr.Type))
             {
-                this.VisitModelEntity(expr);
+                var node = new QNode() { Type = NodeType.Querable, Value = expr.Type.GenericTypeArguments[0].Name };
+                this.Context.Push(node);
             }
             else
             {
@@ -221,12 +205,6 @@ namespace QData.LinqConverter
             }
             
             return expr;
-        }
-
-        private void VisitModelEntity(ConstantExpression expr)
-        {
-            var node = new QNode() { Type = NodeType.Querable, Value = expr.Type.GenericTypeArguments[0].Name };
-            this.Context.Push(node);
         }
 
         /// <summary>
@@ -491,6 +469,7 @@ namespace QData.LinqConverter
         /// </returns>
         protected virtual Expression VisitSelectMethodCall(MethodCallExpression m)
         {
+            this.IsProjection = true;
             this.Visit(m.Arguments[0]);
             var left = this.Context.Pop();
             this.Visit(m.Arguments[1]);
