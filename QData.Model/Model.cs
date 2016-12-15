@@ -48,13 +48,13 @@ namespace QData.Model
             var data = query.Provider.CreateQuery(epression);
 
             if (descriptor.IsProjection)
-            {
-                List<object> result = new List<object>();
-                IEnumerator enumerator = data.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    result.Add(enumerator.Current);
-                }
+            { 
+                var listType = typeof(List<>);
+                var targetType = listType.MakeGenericType(data.ElementType);
+                var result = Activator.CreateInstance(targetType);
+                var methodInfo = targetType.GetMethod("AddRange");
+                methodInfo.Invoke(result, new object[] { data });
+                
                 return result;
             }
             

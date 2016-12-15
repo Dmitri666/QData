@@ -329,7 +329,6 @@ namespace QData.SqlProvider
                     this.classes.Add(signature, type);
                 }
 
-                //var myObj = Activator.CreateInstance(type);
                 return type;
             }
             finally
@@ -338,53 +337,9 @@ namespace QData.SqlProvider
             }
         }
 
-        //public Type GetProxyClass(Type parent, MapperConfiguration mapperConfiguration, out Dictionary<string, string> proxyPropertyMap)
-        //{
-        //    this.rwLock.AcquireReaderLock(Timeout.Infinite);
-        //    try
-        //    {
-        //        KeyValuePair<Type,Dictionary<string,string>> map;
-        //        if (!this.proxies.TryGetValue(parent, out map))
-        //        {
-        //            proxyPropertyMap = new Dictionary<string, string>();
-        //            var proxy = this.CreateProxyClass(parent, mapperConfiguration,proxyPropertyMap);
-        //            map = new KeyValuePair<Type, Dictionary<string, string>>(proxy, proxyPropertyMap);
-        //            this.proxies.Add(parent, map);
-        //        }
-        //        proxyPropertyMap = map.Value; 
-        //        return map.Key;
- 
-             
-        //    }
-        //    finally
-        //    {
-        //        this.rwLock.ReleaseReaderLock();
-        //    }
-        //}
+        
 
-        //public Type GetProxyClass(Dictionary<string,INode> bindings, out Dictionary<string, string> proxyPropertyMap)
-        //{
-        //    this.rwLock.AcquireReaderLock(Timeout.Infinite);
-        //    try
-        //    {
-        //        KeyValuePair<Type, Dictionary<string, string>> map;
-        //        //if (!this.proxies.TryGetValue(parent, out map))
-        //        //{
-        //            proxyPropertyMap = new Dictionary<string, string>();
-        //            var proxy = this.CreateProxyClass(bindings, proxyPropertyMap);
-        //            map = new KeyValuePair<Type, Dictionary<string, string>>(proxy, proxyPropertyMap);
-        //        //    this.proxies.Add(parent, map);
-        //        //}
-        //        proxyPropertyMap = map.Value;
-        //        return map.Key;
-
-
-        //    }
-        //    finally
-        //    {
-        //        this.rwLock.ReleaseReaderLock();
-        //    }
-        //}
+       
 
         #endregion
 
@@ -434,108 +389,7 @@ namespace QData.SqlProvider
             }
         }
 
-//        private Type CreateProxyClass(Type parent, MapperConfiguration mapperConfiguration, Dictionary<string, string> proxyPropertyMap)
-//        {
-//            LockCookie cookie = this.rwLock.UpgradeToWriterLock(Timeout.Infinite);
-//            try
-//            {
-//                string typeName = string.Format("{0}Proxy",parent.Name);
-//#if ENABLE_LINQ_PARTIAL_TRUST
-//                new ReflectionPermission(PermissionState.Unrestricted).Assert();
-//#endif
-//                try
-//                {
-//                    TypeBuilder tb = this.module.DefineType(
-//                        typeName,
-//                        TypeAttributes.Class | TypeAttributes.Public,
-//                        parent);
-//                    var baseProperties = parent.GetProperties();
-//                    var properties = new List<DynamicProperty>();
-//                    var typeMap = new Dictionary<string, Type>();
-//                    foreach (var baseProperty in baseProperties)
-//                    {
-//                        if (typeof(IModelEntity).IsAssignableFrom(baseProperty.PropertyType))
-//                        {
-//                            var mapItem = mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.DestinationType.Equals(baseProperty.PropertyType));
-//                            var propertyName = string.Format("{0}Proxy",baseProperty.Name);
-//                            properties.Add(new DynamicProperty(propertyName,mapItem.SourceType));
-//                            proxyPropertyMap.Add(baseProperty.Name, propertyName); 
-//                            typeMap.Add(propertyName,baseProperty.PropertyType);
-//                        }
-//                    }
-//                    this.GenerateProxyProperties(tb, properties.ToArray(),proxyPropertyMap, typeMap);
-//                    Type result = tb.CreateType();
-//                    this.classCount++;
-//                    return result;
-//                }
-//                finally
-//                {
-//#if ENABLE_LINQ_PARTIAL_TRUST
-//                    PermissionSet.RevertAssert();
-//#endif
-//                }
-//            }
-//            finally
-//            {
-//                this.rwLock.DowngradeFromWriterLock(ref cookie);
-//            }
-//        }
 
-//        private Type CreateProxyClass(Dictionary<string, INode> bindings, Dictionary<string, string> proxyPropertyMap)
-//        {
-//            LockCookie cookie = this.rwLock.UpgradeToWriterLock(Timeout.Infinite);
-//            try
-//            {
-//                string typeName = string.Format("{0}Proxy", "parent.Name");
-//#if ENABLE_LINQ_PARTIAL_TRUST
-//                new ReflectionPermission(PermissionState.Unrestricted).Assert();
-//#endif
-//                try
-//                {
-//                    TypeBuilder tb = this.module.DefineType(
-//                        typeName,
-//                        TypeAttributes.Class | TypeAttributes.Public);
-//                    var properties = new List<DynamicProperty>();
-//                    var typeMap = new Dictionary<string, Type>();
-//                    foreach (var binding in bindings)
-//                    {
-//                        var propertyName = binding.Key;
-//                        properties.Add(new DynamicProperty(propertyName,typeof(string)));
-//                        proxyPropertyMap.Add(propertyName, propertyName);
-//                        typeMap.Add(propertyName, typeof(string));
-//                    }
-
-//                    //var baseProperties = parent.GetProperties();
-
-
-//                    //foreach (var baseProperty in baseProperties)
-//                    //{
-//                    //    if (typeof(IDEntity).IsAssignableFrom(baseProperty.PropertyType))
-//                    //    {
-//                    //        var mapItem = map.GetEntityMap(baseProperty.PropertyType);
-//                    //        var propertyName = string.Format("{0}Proxy", baseProperty.Name);
-//                    //        properties.Add(new DynamicProperty(propertyName, mapItem.DestinationType));
-//                    //        proxyPropertyMap.Add(baseProperty.Name, propertyName);
-//                    //        typeMap.Add(propertyName, baseProperty.PropertyType);
-//                    //    }
-//                    //}
-//                    //this.GenerateProxyProperties(tb, properties.ToArray(), proxyPropertyMap, typeMap);
-//                    //Type result = tb.CreateType();
-//                    //this.classCount++;
-//                    //return result;
-//                }
-//                finally
-//                {
-//#if ENABLE_LINQ_PARTIAL_TRUST
-//                    PermissionSet.RevertAssert();
-//#endif
-//                }
-//            }
-//            finally
-//            {
-//                this.rwLock.DowngradeFromWriterLock(ref cookie);
-//            }
-//        }
         /// <summary>
         /// The generate equals.
         /// </summary>
@@ -663,38 +517,7 @@ namespace QData.SqlProvider
             return fields;
         }
 
-        //private void GenerateProxyProperties(TypeBuilder tb, DynamicProperty[] properties,Dictionary<string,string> proxyPropertyMap, Dictionary<string, Type> typeMap)
-        //{
-        //    for (int i = 0; i < properties.Length; i++)
-        //    {
-        //        DynamicProperty dp = properties[i];
-
-        //        var tmap = typeMap.FirstOrDefault(x => x.Key == dp.Name);
-        //        var pmap = proxyPropertyMap.FirstOrDefault(x => x.Value == tmap.Key);
-                
-                
-        //        PropertyBuilder pb = tb.DefineProperty(dp.Name, PropertyAttributes.HasDefault, dp.Type, null);
-        //        MethodBuilder mbSet = tb.DefineMethod(
-        //            "set_" + dp.Name,
-        //            MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
-        //            null,
-        //            new[] { dp.Type });
-        //        ILGenerator genSet = mbSet.GetILGenerator();
-        //        genSet.Emit(OpCodes.Nop);
-        //        genSet.Emit(OpCodes.Ldarg_0);
-        //        genSet.Emit(OpCodes.Ldarg_1);
-        //        var mi1 = typeof(QueryDescriptorMap).GetMethod("Map");
-        //        genSet.Emit(OpCodes.Call, mi1);
-        //        genSet.Emit(OpCodes.Castclass, tmap.Value);
-        //        var mi2 = tb.BaseType.GetMethod("set_" + pmap.Key);
-        //        genSet.Emit(OpCodes.Call, mi2);
-        //        genSet.Emit(OpCodes.Nop);
-        //        genSet.Emit(OpCodes.Ret);
-        //        pb.SetSetMethod(mbSet);
-        //    }
-
-            
-        //}
+       
         #endregion
     }
 }

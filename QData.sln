@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.SqlProvider", "QData.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Deployment", "QData.Deployment\QData.Deployment.csproj", "{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Client", "QData.Client\QData.Client.csproj", "{D7899103-5C66-42B3-A80B-43935B91EC7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

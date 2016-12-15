@@ -334,7 +334,11 @@ namespace QData.LinqConverter
             {
                 throw new Exception(m.Method.Name);
             }
-             
+
+            if (method == MethodType.Select)
+            {
+                this.IsProjection = true;
+            }
 
             if (m.Object != null)
             {
@@ -456,26 +460,6 @@ namespace QData.LinqConverter
         protected override Expression VisitParameter(ParameterExpression expression)
         {
             return base.VisitParameter(expression);
-        }
-
-        /// <summary>
-        ///     The visit select method call.
-        /// </summary>
-        /// <param name="m">
-        ///     The memberAccess.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="Expression" />.
-        /// </returns>
-        protected virtual Expression VisitSelectMethodCall(MethodCallExpression m)
-        {
-            this.IsProjection = true;
-            this.Visit(m.Arguments[0]);
-            var left = this.Context.Pop();
-            this.Visit(m.Arguments[1]);
-            var node = this.Context.Peek();
-            node.Left = left;
-            return m;
         }
 
         /// <summary>
