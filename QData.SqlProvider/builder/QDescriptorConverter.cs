@@ -122,11 +122,11 @@
             var left = this.ContextExpression.Pop();
 
             var bindingNodes = new Dictionary<string,QNode>();
-            var selectedNode = node.Right;
-            while (selectedNode != null)
+            var bindingPropertyNode = node.Right;
+            while (bindingPropertyNode != null)
             {
-                bindingNodes.Add(Convert.ToString(selectedNode.Value),selectedNode.Right);
-                selectedNode = selectedNode.Left;
+                bindingNodes.Add(Convert.ToString(bindingPropertyNode.Value),bindingPropertyNode.Right);
+                bindingPropertyNode = bindingPropertyNode.Left;
             }
 
             Type projectorType = null;

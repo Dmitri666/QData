@@ -33,6 +33,7 @@ namespace QData.SqlProvider.builder
             {
                 var currentMap = this.mapperConfiguration.GetAllTypeMaps().FirstOrDefault(x => x.SourceType == sourceType);
                 this.MapContext.Push(currentMap);
+                this.CurrentMap = currentMap;
             }
         }
 
@@ -41,6 +42,7 @@ namespace QData.SqlProvider.builder
             if (this.EnableMapping)
             {
                 this.MapContext.Pop();
+                this.CurrentMap = this.MapContext.Count > 0 ? this.MapContext.Peek() : null;
             }
         }
 
@@ -59,15 +61,14 @@ namespace QData.SqlProvider.builder
                 return member;
             }
 
-            var propertyMap = this.MapContext.Peek().GetPropertyMaps()
-                    .FirstOrDefault(
+            var propertyMap = this.CurrentMap.GetPropertyMaps().FirstOrDefault(
                         x => x.DestinationProperty.Name.Equals(member, StringComparison.CurrentCultureIgnoreCase));
 
-            if (propertyMap.CustomExpression != null)
-            {
-                var c = new ExpressionConverter();
-                var node = c.Convert(propertyMap.CustomExpression);
-            }
+            //if (propertyMap.CustomExpression != null)
+            //{
+            //    var c = new ExpressionConverter();
+            //    var node = c.Convert(propertyMap.CustomExpression);
+            //}
 
             if (propertyMap.DestinationPropertyType.IsGenericType
                 && typeof(IModelEntity).IsAssignableFrom(propertyMap.DestinationPropertyType.GenericTypeArguments[0]))
