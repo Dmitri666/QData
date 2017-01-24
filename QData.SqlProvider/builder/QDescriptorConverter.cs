@@ -6,7 +6,7 @@
     using System.Linq.Expressions;
     using System.Reflection;
 
-    using AutoMapper;
+    
 
     using Qdata.Json.Contract;
 
@@ -27,8 +27,7 @@
 
         #region Properties
 
-        private Mapping Mapper { get; }
-
+        
         private Expression Query { get; }
 
         /// <summary>
@@ -46,35 +45,24 @@
 
 
         #endregion
-        public QDescriptorConverter(MapperConfiguration conf, Expression query)
+        public QDescriptorConverter(Expression query)
         {
             this.ContextExpression = new Stack<Expression>();
             this.ContextParameters = new Stack<ParameterExpression>();
-            this.Mapper = new Mapping(conf);
             this.Query = query;
         }
 
         public void VisitMember(QNode node)
         {
-            if (node.Left == null)
-            {
-                this.Mapper.Reset();
-                var mapped = this.Mapper.Map(Convert.ToString(node.Value));
-                this.ContextExpression.Push(Expression.PropertyOrField(this.ContextParameters.Peek(), mapped));
-            }
-            else
-            {
-                var mapped = this.Mapper.Map(Convert.ToString(node.Value));
-                this.ContextExpression.Push(Expression.PropertyOrField(this.ContextExpression.Pop(), mapped));
-            }
+            this.ContextExpression.Push(
+                node.Left == null
+                    ? Expression.PropertyOrField(this.ContextParameters.Peek(), Convert.ToString(node.Value))
+                    : Expression.PropertyOrField(this.ContextExpression.Pop(), Convert.ToString(node.Value)));
         }
 
         public void VisitQuerable(QNode node)
         {
             this.ContextExpression.Push(this.Query);
-            this.Mapper.EnableMapping = true;
-            //this.Mapper.EnterMapContext(this.Query.Type.GenericTypeArguments[0]);
-            
         }
 
         public void VisitMethod(QNode node)
@@ -108,13 +96,11 @@
 
             var parameter = Expression.Parameter(parameterType, string.Format("x{0}", this.parameterPrefix++));
             this.ContextParameters.Push(parameter);
-            this.Mapper.EnterMapContext(parameterType);
         }
 
         public void LeaveContext(QNode node)
         {
             this.ContextParameters.Pop();
-            this.Mapper.LeaveMapContext();
         }
 
         public void VisitProjection(QNode node)
@@ -168,7 +154,6 @@
 
             this.ContextExpression.Push(result);
 
-            this.Mapper.EnableMapping = false;
         }
 
         public void VisitConstant(QNode node)

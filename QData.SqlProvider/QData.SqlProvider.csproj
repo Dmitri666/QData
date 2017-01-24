@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=5.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.5.1.1\lib\net45\AutoMapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -47,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="builder\IQNodeVisitor.cs" />
-    <Compile Include="builder\Mapping.cs" />
     <Compile Include="builder\QDescriptorConverter.cs" />
     <Compile Include="builder\QNodeExtentions.cs" />
     <Compile Include="ExpressionProvider.cs" />
@@ -67,10 +62,6 @@
     <ProjectReference Include="..\Qdata.Json.Contract\Qdata.Json.Contract.csproj">
       <Project>{25e33edf-5c4c-450c-b11a-35ecc66155f9}</Project>
       <Name>Qdata.Json.Contract</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QData.LinqConverter\QData.LinqConverter.csproj">
-      <Project>{2a69873b-a671-4da6-bb14-f9839e07e386}</Project>
-      <Name>QData.LinqConverter</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

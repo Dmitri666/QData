@@ -36,8 +36,7 @@ namespace QData.LinqConverter
         #endregion
 
         #region Properties
-        public bool IsProjection { get; set; }
-
+        
         /// <summary>
         ///     Gets or sets the context.
         /// </summary>
@@ -333,11 +332,6 @@ namespace QData.LinqConverter
             else
             {
                 throw new Exception(m.Method.Name);
-            }
-
-            if (method == MethodType.Select)
-            {
-                this.IsProjection = true;
             }
 
             if (m.Object != null)

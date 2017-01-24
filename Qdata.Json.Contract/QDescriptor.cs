@@ -2,18 +2,16 @@
 
 namespace Qdata.Json.Contract
 {
-    public class QDescriptor
+    using QData.Common;
+    public class QDescriptor<TM> where TM : IModelEntity
     {
         public QDescriptor()
         {
-            
             this.Include = new List<QNode>();
-                 
         }
         public QNode Root { get; set; }
 
         public List<QNode> Include { get; set; }
 
-        public bool IsProjection { get; set; }
     }
 }

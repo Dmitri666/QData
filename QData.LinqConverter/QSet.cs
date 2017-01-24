@@ -8,6 +8,8 @@ namespace QData.LinqConverter
 {
     using System.Linq.Expressions;
 
+    using Qdata.Json.Contract;
+
     using QData.Common;
 
     public class QSet<T> : EnumerableQuery<T> , IQSet
@@ -26,6 +28,13 @@ namespace QData.LinqConverter
         public QSet(Expression expression)
             : base(expression)
         {
+        }
+
+        public QDescriptor<T> ConvertToQDescriptor(IQueryable query)
+        {
+            var con = new ExpressionConverter();
+            var root = con.Convert(query.Expression);
+            return new QDescriptor<T>() { Root = root };
         }
     }
 }

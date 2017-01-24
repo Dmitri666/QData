@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qdata.Json.Contract", "Qdat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.LinqConverter", "QData.LinqConverter\QData.LinqConverter.csproj", "{2A69873B-A671-4DA6-BB14-F9839E07E386}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Model", "QData.Model\QData.Model.csproj", "{6EF17A95-8160-4C31-9882-DF71F025CEE7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.SearchService", "QData.Model\QData.SearchService.csproj", "{6EF17A95-8160-4C31-9882-DF71F025CEE7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.SqlProvider", "QData.SqlProvider\QData.SqlProvider.csproj", "{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}"
 EndProject

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,11 +13,13 @@ namespace QData.Client
 
     using Qdata.Json.Contract;
 
-    public class QDataClient
+    using QData.Common;
+
+    public class QDataClient<TM> where TM : IModelEntity
     {
        
 
-        public IEnumerable<TModel> Get<TModel>(Uri accsessPoint, QDescriptor descriptor)
+        public IEnumerable<TM> Get(Uri accsessPoint, QDescriptor<TM> descriptor)
         {
             using (var client = new HttpClient())
             {
@@ -41,7 +42,7 @@ namespace QData.Client
                     {
                         string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
 
-                        return JsonConvert.DeserializeObject<IEnumerable<TModel>>(jsonContent);
+                        return JsonConvert.DeserializeObject<IEnumerable<TM>>(jsonContent);
                     }
 
                     return null;
@@ -51,7 +52,40 @@ namespace QData.Client
             return null;
         }
 
-        public void Get(Uri accsessPoint, QDescriptor descriptor, Type returnType, object result)
+        public IEnumerable<TP> Get<TP>(Uri accsessPoint, QDescriptor<TM> descriptor) where TP : IProjection
+        {
+            using (var client = new HttpClient())
+            {
+                var dateTimeConverter = new IsoDateTimeConverter();
+                // Default for IsoDateTimeConverter is yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK
+                dateTimeConverter.DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm";
+
+                var settings = new JsonSerializerSettings();
+                settings.Converters = new List<JsonConverter> { dateTimeConverter };
+
+                var json = JsonConvert.SerializeObject(descriptor, settings);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                using (
+                    Task<HttpResponseMessage> response =
+                        client.PostAsync(accsessPoint, content))
+                {
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
+
+                        return JsonConvert.DeserializeObject<IEnumerable<TP>>(jsonContent);
+                    }
+
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        public void Get(Uri accsessPoint, QDescriptor<TM> descriptor, Type returnType, object result)
         {
             using (var client = new HttpClient())
             {

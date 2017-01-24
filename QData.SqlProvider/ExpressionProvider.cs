@@ -8,18 +8,21 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Linq.Expressions;
-using AutoMapper;
+
 using Qdata.Json.Contract;
 using QData.SqlProvider.builder;
 
 namespace QData.SqlProvider
 {
+    using System.Linq;
+
+    using QData.Common;
     /// <summary>
     ///     The repository impl.
     /// </summary>
     /// <typeparam name="TEntity">
     /// </typeparam>
-    public class ExpressionProvider
+    public class ExpressionProvider<TM> where TM : IModelEntity
     {
         #region Fields
 
@@ -29,16 +32,16 @@ namespace QData.SqlProvider
 
         #region Constructors and Destructors
 
-        public ExpressionProvider(MapperConfiguration mapConfig,Expression query)
+        public ExpressionProvider(IQueryable<TM> query)
         {
-            this.converter = new QDescriptorConverter(mapConfig, query);
+            this.converter = new QDescriptorConverter(query.Expression);
         }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public Expression ConvertToExpression(QDescriptor descriptor)
+        public Expression ConvertToExpression(QDescriptor<TM> descriptor)
         {
             descriptor.Root.Accept(this.converter);
             return this.converter.ContextExpression.Pop();
