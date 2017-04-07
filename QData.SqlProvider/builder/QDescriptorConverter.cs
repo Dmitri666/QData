@@ -84,11 +84,12 @@
             this.ContextExpression.Push(exp);
         }
 
-        public void VisitCount()
+        public void VisitEmptyMethod(QNode node)
         {
             var left = this.ContextExpression.Pop();
             var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
-            var exp = Expression.Call(typeof(Enumerable), "Count", types.ToArray(),left);
+            var method = EnumResolver.ResolveMethod(node.Value);
+            var exp = Expression.Call(typeof(Enumerable), method.ToString(), types.ToArray(),left);
             this.ContextExpression.Push(exp);
         }
 

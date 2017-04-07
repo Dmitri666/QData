@@ -34,6 +34,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="builder\EnumResolver.cs" />
     <Compile Include="builder\IQNodeVisitor.cs" />
     <Compile Include="builder\QDescriptorConverter.cs" />
     <Compile Include="builder\QNodeExtentions.cs" />

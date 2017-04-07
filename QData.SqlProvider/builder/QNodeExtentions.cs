@@ -1,4 +1,6 @@
-﻿namespace QData.ExpressionProvider.builder
+﻿using System.Collections.Specialized;
+
+namespace QData.ExpressionProvider.builder
 {
     using System;
 
@@ -27,22 +29,15 @@
 
             if (node.Type == NodeType.Method)
             {
-                MethodType method;
-                if (node.Value is long)
-                {
-                    method = (MethodType)Convert.ToInt16(node.Value);
-                }
-                else
-                {
-                    Enum.TryParse(Convert.ToString(node.Value), out method);
-                }
+                MethodType method = EnumResolver.ResolveMethod(node.Value);
+
                 if (method == MethodType.Select)
                 {
                     AcceptProjection(node, visitor);
                 }
-                else if (method == MethodType.Count && node.Right == null)
+                else if (node.Right == null)
                 {
-                    AcceptCount(node, visitor);
+                    AcceptEmptyMethod(node, visitor);
                 }
                 else
                 {
@@ -86,10 +81,10 @@
 
         }
 
-        public static void AcceptCount(QNode node, IQNodeVisitor visitor)
+        public static void AcceptEmptyMethod(QNode node, IQNodeVisitor visitor)
         {
             node.Left.Accept(visitor);
-            visitor.VisitCount();
+            visitor.VisitEmptyMethod(node);
         }
 
         public static void AcceptProjection(QNode node, IQNodeVisitor visitor)

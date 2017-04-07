@@ -20,7 +20,7 @@
 
         void VisitProjection(QNode node);
 
-        void VisitCount();
+        void VisitEmptyMethod(QNode node);
 
 
 
