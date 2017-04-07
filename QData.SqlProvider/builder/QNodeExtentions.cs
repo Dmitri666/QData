@@ -1,10 +1,11 @@
-﻿using System;
-using Qdata.Json.Contract;
-using QData.Common;
-
-
-namespace QData.SqlProvider.builder
+﻿namespace QData.ExpressionProvider.builder
 {
+    using System;
+
+    using Qdata.Json.Contract;
+
+    using QData.Common;
+
     public static class QNodeExtentions
     {
         public static void Accept(this QNode node, IQNodeVisitor visitor)
@@ -38,6 +39,10 @@ namespace QData.SqlProvider.builder
                 if (method == MethodType.Select)
                 {
                     AcceptProjection(node, visitor);
+                }
+                else if (method == MethodType.Count && node.Right == null)
+                {
+                    AcceptCount(node, visitor);
                 }
                 else
                 {
@@ -79,6 +84,12 @@ namespace QData.SqlProvider.builder
             visitor.VisitMethod(node);
             visitor.LeaveContext(node);
 
+        }
+
+        public static void AcceptCount(QNode node, IQNodeVisitor visitor)
+        {
+            node.Left.Accept(visitor);
+            visitor.VisitCount();
         }
 
         public static void AcceptProjection(QNode node, IQNodeVisitor visitor)

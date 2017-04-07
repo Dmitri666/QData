@@ -54,9 +54,9 @@
       <Project>{25e33edf-5c4c-450c-b11a-35ecc66155f9}</Project>
       <Name>Qdata.Json.Contract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QData.SqlProvider\QData.SqlProvider.csproj">
+    <ProjectReference Include="..\QData.SqlProvider\QData.ExpressionProvider.csproj">
       <Project>{70e07dc3-22d6-400b-b5a1-c3beabf406d8}</Project>
-      <Name>QData.SqlProvider</Name>
+      <Name>QData.ExpressionProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

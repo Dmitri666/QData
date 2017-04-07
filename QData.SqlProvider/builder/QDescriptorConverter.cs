@@ -1,12 +1,10 @@
-﻿namespace QData.SqlProvider.builder
+﻿namespace QData.ExpressionProvider.builder
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-
-    
 
     using Qdata.Json.Contract;
 
@@ -83,6 +81,14 @@
             var lambda = Expression.Lambda(right, this.ContextParameters.Peek());
 
             var exp = this.BuildMethodCallExpression(method, left, lambda);
+            this.ContextExpression.Push(exp);
+        }
+
+        public void VisitCount()
+        {
+            var left = this.ContextExpression.Pop();
+            var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
+            var exp = Expression.Call(typeof(Enumerable), "Count", types.ToArray(), left);
             this.ContextExpression.Push(exp);
         }
 

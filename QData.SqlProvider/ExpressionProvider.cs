@@ -7,16 +7,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Linq.Expressions;
-
-using Qdata.Json.Contract;
-using QData.SqlProvider.builder;
-
-namespace QData.SqlProvider
+namespace QData.ExpressionProvider
 {
     using System.Linq;
+    using System.Linq.Expressions;
+
+    using Qdata.Json.Contract;
 
     using QData.Common;
+    using QData.ExpressionProvider.builder;
+
     /// <summary>
     ///     The repository impl.
     /// </summary>

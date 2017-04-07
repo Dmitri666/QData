@@ -1,8 +1,7 @@
-﻿using Qdata.Json.Contract;
-
-
-namespace QData.SqlProvider.builder
+﻿namespace QData.ExpressionProvider.builder
 {
+    using Qdata.Json.Contract;
+
     public interface IQNodeVisitor
     {
         void VisitBinary(QNode node);
@@ -21,7 +20,9 @@ namespace QData.SqlProvider.builder
 
         void VisitProjection(QNode node);
 
-        
+        void VisitCount();
+
+
 
 
     }
