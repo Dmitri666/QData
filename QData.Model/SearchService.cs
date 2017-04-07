@@ -11,7 +11,9 @@ namespace QData.SearchService
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Entity;
     using System.Linq;
+    using System.Linq.Expressions;
 
     using Qdata.Json.Contract;
 
@@ -39,9 +41,14 @@ namespace QData.SearchService
         public int Count<TM>(QDescriptor<TM> descriptor, IQueryable<TM> query) where TM : IModelEntity
         {
             var provider = new ExpressionProvider<TM>(query);
+            
             var expression = provider.ConvertToExpression(descriptor);
+            var parameter = Expression.Parameter(query.ElementType, string.Format("x"));
+            var lambda = Expression.Lambda(Expression.Constant(true), parameter);
+            var countExp = Expression.Call(typeof(Queryable), "Count", new[] { query.ElementType }, expression, lambda);
 
-            var data = query.Provider.CreateQuery(expression).Expression;
+
+            var data = query.Provider.CreateQuery(countExp);
 
             
 
