@@ -336,7 +336,7 @@ namespace QData.LinqConverter
 
             if (m.Object != null)
             {
-                if (m.Arguments[0].NodeType == ExpressionType.MemberAccess)
+                if (m.Arguments.Count > 0 && m.Arguments[0].NodeType == ExpressionType.MemberAccess)
                 {
                     if (typeof(IConstantPlaceHolder).IsAssignableFrom(
                         ((MemberExpression)m.Arguments[0]).Expression.Type))
@@ -359,8 +359,11 @@ namespace QData.LinqConverter
                 {
                     this.Visit(m.Object);
                     node.Left = this.Context.Pop();
-                    this.Visit(m.Arguments[0]);
-                    node.Right = this.Context.Pop();
+                    if (m.Arguments.Count > 0)
+                    {
+                        this.Visit(m.Arguments[0]);
+                        node.Right = this.Context.Pop();
+                    }
                 }
             }
             else

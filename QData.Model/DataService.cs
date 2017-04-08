@@ -41,9 +41,10 @@ namespace QData.Querable.DataService
             var provider = new ExpressionProvider<TM>(source);
             
             var expression = provider.ConvertToExpression(descriptor);
-            var countExp = Expression.Call(typeof(Queryable), "Count", new[] { expression.Type.GenericTypeArguments[0] }, expression);
-            var skipExpression = Expression.Call(typeof(Queryable), "Skip", new[] { expression.Type.GenericTypeArguments[0] }, expression, Expression.Constant(skip));
-            var takeExpression = Expression.Call(typeof(Queryable), "Take", new[] { expression.Type.GenericTypeArguments[0] }, skipExpression, Expression.Constant(take));
+            var type = expression.Type.GenericTypeArguments[0];
+            var countExp = Expression.Call(typeof(Queryable), "Count", new[] { type }, expression);
+            var skipExpression = Expression.Call(typeof(Queryable), "Skip", new[] { type }, expression, Expression.Constant(skip));
+            var takeExpression = Expression.Call(typeof(Queryable), "Take", new[] { type }, skipExpression, Expression.Constant(take));
             
 
             var data = source.Provider.CreateQuery(takeExpression);

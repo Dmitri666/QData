@@ -65,32 +65,31 @@
 
         public void VisitMethod(QNode node)
         {
-            MethodType method;
-            if (node.Value is long)
-            {
-                method = (MethodType)Convert.ToInt16(node.Value);
-            }
-            else
-            {
-                Enum.TryParse(Convert.ToString(node.Value), out method);
-            }
-
             var right = this.ContextExpression.Pop();
             var left = this.ContextExpression.Pop();
 
             var lambda = Expression.Lambda(right, this.ContextParameters.Peek());
 
-            var exp = this.BuildMethodCallExpression(method, left, lambda);
+            var exp = this.BuildMethodCallExpression(EnumResolver.ResolveMethod(node.Value), left, lambda);
             this.ContextExpression.Push(exp);
         }
 
         public void VisitEmptyMethod(QNode node)
         {
             var left = this.ContextExpression.Pop();
-            var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
             var method = EnumResolver.ResolveMethod(node.Value);
-            var exp = Expression.Call(typeof(Enumerable), method.ToString(), types.ToArray(),left);
-            this.ContextExpression.Push(exp);
+            if (method == MethodType.ToString)
+            {
+                var exp = Expression.Call(left, method.ToString(),null);
+                this.ContextExpression.Push(exp);
+            }
+            else
+            {
+                var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
+                var exp = Expression.Call(typeof(Enumerable), method.ToString(), types.ToArray(), left);
+                this.ContextExpression.Push(exp);
+            }
+            
         }
 
         public void EnterContext(QNode node)
@@ -231,15 +230,7 @@
         {
             var right = this.ContextExpression.Pop();
             var left = this.ContextExpression.Pop();
-            BinaryType op;
-            if (node.Value is long)
-            {
-                op = (BinaryType)Convert.ToInt16(node.Value);
-            }
-            else
-            {
-                Enum.TryParse(Convert.ToString(node.Value), out op);
-            }
+            BinaryType op = EnumResolver.ResolveBinary(node.Value);
             var exp = this.BuildBinaryExpression(op, left, right);
             this.ContextExpression.Push(exp);
         }
@@ -283,20 +274,32 @@
 
             if (binary == BinaryType.Contains)
             {
-                var containsMethod = typeof(string).GetMethod("Contains");
-                return Expression.Call(left, containsMethod, (ConstantExpression)right);
+                if (left.Type != typeof (string))
+                {
+                    left = Expression.Call(left, "ToString", null);
+                }
+                
+                return Expression.Call(left, Methods.Contains, (ConstantExpression)right);
             }
 
             if (binary == BinaryType.StartsWith)
             {
-                var startsWithMethod = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
-                return Expression.Call(left, startsWithMethod, (ConstantExpression)right);
+                if (left.Type != typeof(string))
+                {
+                    left = Expression.Call(left, "ToString", null);
+                }
+                
+                return Expression.Call(left, Methods.StartsWith, (ConstantExpression)right);
             }
 
             if (binary == BinaryType.EndsWith)
             {
-                var endsWithMethod = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
-                return Expression.Call(left, endsWithMethod, (ConstantExpression)right);
+                if (left.Type != typeof(string))
+                {
+                    left = Expression.Call(left, "ToString", null);
+                }
+
+                return Expression.Call(left, Methods.EndsWith, (ConstantExpression)right);
             }
 
             if (binary == BinaryType.In)
