@@ -1,4 +1,6 @@
-﻿namespace QData.ExpressionProvider.builder
+﻿using Newtonsoft.Json.Linq;
+
+namespace QData.ExpressionProvider.builder
 {
     using System;
     using System.Collections.Generic;
@@ -212,6 +214,19 @@
                         throw new Exception(string.Format("VisitConstantNode :Type {0}", memberType));
                     }
                 }
+                else if (node.Value.GetType() == typeof (JArray))
+                {
+                    var listType = typeof(List<>);
+                    var concreteType = listType.MakeGenericType(memberType);
+                    var valueList = Activator.CreateInstance(concreteType);
+                    var methodInfo = valueList.GetType().GetMethod("Add");
+                    foreach (var value in (JArray)node.Value)
+                    {
+                        methodInfo.Invoke(valueList, new object[] { value.ToObject(memberType) });
+                    }
+                    var exp = Expression.Constant(valueList);
+                    this.ContextExpression.Push(exp);
+                }
                 else
                 {
                     var value = Convert.ChangeType(node.Value, memberType);
@@ -250,6 +265,11 @@
             if (binary == BinaryType.Equal)
             {
                 return Expression.Equal(left, right);
+            }
+
+            if (binary == BinaryType.NotEqual)
+            {
+                return Expression.NotEqual(left, right);
             }
 
             if (binary == BinaryType.GreaterThan)
@@ -306,6 +326,13 @@
             {
                 var method = right.Type.GetMethod("Contains");
                 return Expression.Call(right, method, left);
+            }
+
+            if (binary == BinaryType.NotIn)
+            {
+                var method = right.Type.GetMethod("Contains");
+                var call = Expression.Call(right, method, left);
+                return Expression.Not(call);
             }
 
             if (binary == BinaryType.Take)

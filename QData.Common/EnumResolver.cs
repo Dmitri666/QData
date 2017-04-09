@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QData.Common;
 
-namespace QData.ExpressionProvider.builder
+namespace QData.Common
 {
     public class EnumResolver
     {

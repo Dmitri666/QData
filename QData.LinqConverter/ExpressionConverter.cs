@@ -31,6 +31,7 @@ namespace QData.LinqConverter
         public ExpressionConverter()
         {
             this.Context = new Stack<QNode>();
+            this.IsNot = new Stack<ExpressionType>();
         }
 
         #endregion
@@ -42,6 +43,7 @@ namespace QData.LinqConverter
         /// </summary>
         private Stack<QNode> Context { get; set; }
 
+        private Stack<ExpressionType> IsNot { get; set; } 
         #endregion
 
         #region Public Methods and Operators
@@ -346,13 +348,22 @@ namespace QData.LinqConverter
                         this.Visit(m.Arguments[0]);
                         node.Right = this.Context.Pop();
                     }
-                    else
+                    else if(node.Type == NodeType.Binary && EnumResolver.ResolveBinary(node.Value) == BinaryType.Contains)
                     {
-                        //node = new CallNode("In");
-                        //this.Visit(m.Arguments[0]);
-                        //node.Left = this.Context.Pop();
-                        //this.Visit(m.Object);
-                        //node.Right = this.Context.Pop();
+                        if (this.IsNot.Peek() == ExpressionType.Not)
+                        {
+                            node.Value = BinaryType.NotIn;
+                            this.IsNot.Pop();
+                        }
+                        else
+                        {
+                            node.Value = BinaryType.In;
+                        }
+                        
+                        this.Visit(m.Arguments[0]);
+                        node.Left = this.Context.Pop();
+                        this.Visit(m.Object);
+                        node.Right = this.Context.Pop();
                     }
                 }
                 else
@@ -471,6 +482,10 @@ namespace QData.LinqConverter
         /// </returns>
         protected virtual Expression VisitUnary(UnaryExpression b)
         {
+            if (b.NodeType == ExpressionType.Not)
+            {
+                this.IsNot.Push(b.NodeType);
+            }
             this.Visit(b.Operand);
             return b;
         }

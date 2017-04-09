@@ -36,7 +36,9 @@
         EndsWith = 9,
         In = 10,
         Take = 11,
-        Skip = 12
+        Skip = 12,
+        NotEqual = 13,
+        NotIn = 14
 
     }
 }
