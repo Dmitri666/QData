@@ -22,7 +22,7 @@ namespace QData.ExpressionProvider
     /// </summary>
     /// <typeparam name="TEntity">
     /// </typeparam>
-    public class ExpressionProvider<TM> where TM : IModelEntity
+    public class ExpressionProvider
     {
         #region Fields
 
@@ -32,7 +32,7 @@ namespace QData.ExpressionProvider
 
         #region Constructors and Destructors
 
-        public ExpressionProvider(IQueryable<TM> query)
+        public ExpressionProvider(IQueryable query)
         {
             this.converter = new QDescriptorConverter(query.Expression);
         }
@@ -41,7 +41,7 @@ namespace QData.ExpressionProvider
 
         #region Public Methods and Operators
 
-        public Expression ConvertToExpression(QDescriptor<TM> descriptor)
+        public Expression ConvertToExpression(QDescriptor descriptor)
         {
             descriptor.Root.Accept(this.converter);
             return this.converter.ContextExpression.Pop();

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QData.Querable.DataService
+﻿namespace QData.Querable.Extentions
 {
+    using System;
+
     [Serializable]
     public class Page
     {

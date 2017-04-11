@@ -3,7 +3,7 @@
 namespace Qdata.Json.Contract
 {
     using QData.Common;
-    public class QDescriptor<TM> where TM : IModelEntity
+    public class QDescriptor
     {
         public QDescriptor()
         {

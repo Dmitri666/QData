@@ -30,11 +30,11 @@ namespace QData.LinqConverter
         {
         }
 
-        public QDescriptor<T> ConvertToQDescriptor(IQueryable query)
+        public QDescriptor ConvertToQDescriptor(IQueryable query)
         {
             var con = new ExpressionConverter();
             var root = con.Convert(query.Expression);
-            return new QDescriptor<T>() { Root = root };
+            return new QDescriptor() { Root = root };
         }
     }
 }

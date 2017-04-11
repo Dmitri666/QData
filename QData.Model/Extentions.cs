@@ -7,24 +7,19 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Qdata.Json.Contract;
-using QData.Common;
-using QData.ExpressionProvider;
-
-namespace QData.Querable.DataService
+namespace QData.Querable.Extentions
 {
-    public class DataService
-    {
-        public object Search<TM>(QDescriptor<TM> descriptor, IQueryable<TM> source) where TM : IModelEntity
-        {
-            var provider = new ExpressionProvider<TM>(source);
-            var expression = provider.ConvertToExpression(descriptor);
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
 
-            
+    using QData.Common;
+
+    public static class Extentions
+    {
+        public static object Execute(this IQueryable source,Expression expression) 
+        {
             var data = source.Provider.CreateQuery(expression);
 
             var listType = typeof(List<>);
@@ -36,11 +31,8 @@ namespace QData.Querable.DataService
             return result;
         }
 
-        public Page GetPage<TM>(QDescriptor<TM> descriptor, IQueryable<TM> source, int skip,int take) where TM : IModelEntity
+        public static Page GetPage(this IQueryable source, Expression expression, int skip,int take) 
         {
-            var provider = new ExpressionProvider<TM>(source);
-            
-            var expression = provider.ConvertToExpression(descriptor);
             var type = expression.Type.GenericTypeArguments[0];
             var countExp = Expression.Call(typeof(Queryable), "Count", new[] { type }, expression);
             var skipExpression = Expression.Call(typeof(Queryable), "Skip", new[] { type }, expression, Expression.Constant(skip));

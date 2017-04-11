@@ -19,7 +19,7 @@ namespace QData.Client
     {
        
 
-        public IEnumerable<TM> Get(Uri accsessPoint, QDescriptor<TM> descriptor)
+        public IEnumerable<TM> Get(Uri accsessPoint, QDescriptor descriptor)
         {
             using (var client = new HttpClient())
             {
@@ -52,7 +52,7 @@ namespace QData.Client
             return null;
         }
 
-        public IEnumerable<TP> Get<TP>(Uri accsessPoint, QDescriptor<TM> descriptor) where TP : IProjection
+        public IEnumerable<TP> Get<TP>(Uri accsessPoint, QDescriptor descriptor) where TP : IProjection
         {
             using (var client = new HttpClient())
             {
@@ -85,7 +85,7 @@ namespace QData.Client
             return null;
         }
 
-        public void Get(Uri accsessPoint, QDescriptor<TM> descriptor, Type returnType, object result)
+        public void Get(Uri accsessPoint, QDescriptor descriptor, Type returnType, object result)
         {
             using (var client = new HttpClient())
             {
