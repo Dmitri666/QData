@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QData.ExpressionProvider</RootNamespace>
     <AssemblyName>QData.ExpressionProvider</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,10 +39,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="builder\IQNodeVisitor.cs" />
-    <Compile Include="builder\Methods.cs" />
-    <Compile Include="builder\QDescriptorConverter.cs" />
-    <Compile Include="builder\QNodeExtentions.cs" />
+    <Compile Include="Builder\IQNodeVisitor.cs" />
+    <Compile Include="Builder\Methods.cs" />
+    <Compile Include="Builder\QDescriptorConverter.cs" />
+    <Compile Include="Builder\QNodeExtentions.cs" />
     <Compile Include="ExpressionProvider.cs" />
     <Compile Include="LinqRuntimeClassBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

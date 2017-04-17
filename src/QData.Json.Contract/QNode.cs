@@ -1,18 +1,17 @@
-﻿using System;
-using QData.Common;
+﻿using QData.Common;
 
 namespace Qdata.Json.Contract
 {
-    [Serializable]
+    
     public class QNode
     {
-
+        
         public NodeType Type { get; set; }
-
+        
         public QNode Left { get; set; }
-
+        
         public QNode Right { get; set; }
-
+        
         public object Value { get; set; }
     }
 }

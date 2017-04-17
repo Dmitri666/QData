@@ -1,7 +1,7 @@
-﻿namespace QData.ExpressionProvider.builder
-{
-    using Qdata.Json.Contract;
+﻿using Qdata.Json.Contract;
 
+namespace QData.ExpressionProvider.Builder
+{
     public interface IQNodeVisitor
     {
         void VisitBinary(QNode node);

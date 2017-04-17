@@ -7,6 +7,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using QData.ExpressionProvider.builder;
+using QData.ExpressionProvider.Builder;
+
 namespace QData.ExpressionProvider
 {
     using System.Linq;
@@ -15,7 +18,6 @@ namespace QData.ExpressionProvider
     using Qdata.Json.Contract;
 
     using QData.Common;
-    using QData.ExpressionProvider.builder;
 
     /// <summary>
     ///     The repository impl.

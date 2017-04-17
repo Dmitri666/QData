@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,111 +16,93 @@ namespace QData.Client
 
     using QData.Common;
 
-    public class QDataClient<TM> where TM : IModelEntity
+    public class QDataClient
     {
-       
 
-        public IEnumerable<TM> Get(Uri accsessPoint, QDescriptor descriptor)
+        
+
+        private static JsonSerializerSettings Settings = new JsonSerializerSettings();
+
+        static QDataClient()
         {
-            using (var client = new HttpClient())
+            
+
+            var dateTimeConverter = new IsoDateTimeConverter();
+            // Default for IsoDateTimeConverter is yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK
+            dateTimeConverter.DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm";
+
+
+            Settings.Converters = new List<JsonConverter> { dateTimeConverter };
+        }
+
+        public IEnumerable<T> Get<T>(Uri accsessPoint, QDescriptor descriptor)
+        {
+            using (HttpClient client = new HttpClient())
             {
-                var dateTimeConverter = new IsoDateTimeConverter();
-                // Default for IsoDateTimeConverter is yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK
-                dateTimeConverter.DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm";
-
-                var settings = new JsonSerializerSettings();
-                settings.Converters = new List<JsonConverter> { dateTimeConverter };
-
-                var json = JsonConvert.SerializeObject(descriptor, settings);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(descriptor, Settings);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (
-                    Task<HttpResponseMessage> response =
-                        client.PostAsync(accsessPoint, content))
+                Task<HttpResponseMessage> response =
+                    client.PostAsync(accsessPoint, content);
+
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
+                    string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
 
-                        return JsonConvert.DeserializeObject<IEnumerable<TM>>(jsonContent);
-                    }
-
-                    return null;
+                    return JsonConvert.DeserializeObject<IEnumerable<T>>(jsonContent);
                 }
             }
-
             return null;
         }
 
-        public IEnumerable<TP> Get<TP>(Uri accsessPoint, QDescriptor descriptor) where TP : IProjection
+        public IEnumerable<TP> GetProjection<TP>(Uri accsessPoint, QDescriptor descriptor) where TP : IProjection
         {
-            using (var client = new HttpClient())
+            using (HttpClient client = new HttpClient())
             {
-                var dateTimeConverter = new IsoDateTimeConverter();
-                // Default for IsoDateTimeConverter is yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK
-                dateTimeConverter.DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm";
-
-                var settings = new JsonSerializerSettings();
-                settings.Converters = new List<JsonConverter> { dateTimeConverter };
-
-                var json = JsonConvert.SerializeObject(descriptor, settings);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(descriptor, Settings);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (
-                    Task<HttpResponseMessage> response =
-                        client.PostAsync(accsessPoint, content))
+                Task<HttpResponseMessage> response =
+                    client.PostAsync(accsessPoint, content);
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
+                    string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
 
-                        return JsonConvert.DeserializeObject<IEnumerable<TP>>(jsonContent);
-                    }
-
-                    return null;
+                    return JsonConvert.DeserializeObject<IEnumerable<TP>>(jsonContent);
                 }
             }
-
             return null;
+
+
         }
 
         public void Get(Uri accsessPoint, QDescriptor descriptor, Type returnType, object result)
         {
-            using (var client = new HttpClient())
+            using (HttpClient client = new HttpClient())
             {
-                var dateTimeConverter = new IsoDateTimeConverter();
-                // Default for IsoDateTimeConverter is yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK
-                dateTimeConverter.DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm";
-
-                var settings = new JsonSerializerSettings();
-                settings.Converters = new List<JsonConverter> { dateTimeConverter };
-
-                var json = JsonConvert.SerializeObject(descriptor, settings);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(descriptor, Settings);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (
-                    Task<HttpResponseMessage> response =
-                        client.PostAsync(accsessPoint, content))
+                Task<HttpResponseMessage> response =
+                    client.PostAsync(accsessPoint, content);
+
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
+                    string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
 
-                        var listType = typeof(IEnumerable<>);
-                        var targetType = listType.MakeGenericType(returnType);
-                        var res = JsonConvert.DeserializeObject(jsonContent, targetType);
-                        var methodInfo = result.GetType().GetMethod("AddRange");
-                        methodInfo.Invoke(result, new object[] { res });
-                    }
-
-
+                    var listType = typeof (IEnumerable<>);
+                    var targetType = listType.MakeGenericType(returnType);
+                    var res = JsonConvert.DeserializeObject(jsonContent, targetType);
+                    var methodInfo = result.GetType().GetTypeInfo().GetMethod("AddRange");
+                    methodInfo.Invoke(result, new object[] {res});
                 }
             }
-
-
         }
     }
 }

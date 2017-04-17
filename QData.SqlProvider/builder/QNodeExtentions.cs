@@ -1,13 +1,8 @@
-﻿using System.Collections.Specialized;
+﻿using Qdata.Json.Contract;
+using QData.Common;
 
-namespace QData.ExpressionProvider.builder
+namespace QData.ExpressionProvider.Builder
 {
-    using System;
-
-    using Qdata.Json.Contract;
-
-    using QData.Common;
-
     public static class QNodeExtentions
     {
         public static void Accept(this QNode node, IQNodeVisitor visitor)

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using QData.ExpressionProvider.Builder;
 
 namespace QData.ExpressionProvider.builder
 {
@@ -27,7 +28,7 @@ namespace QData.ExpressionProvider.builder
 
         #region Properties
 
-        
+
         private Expression Query { get; }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace QData.ExpressionProvider.builder
         /// </summary>
         private Stack<ParameterExpression> ContextParameters { get; }
 
-        
+
 
 
 
@@ -82,25 +83,25 @@ namespace QData.ExpressionProvider.builder
             var method = EnumResolver.ResolveMethod(node.Value);
             if (method == MethodType.ToString)
             {
-                var exp = Expression.Call(left, method.ToString(),null);
+                var exp = Expression.Call(left, method.ToString(), null);
                 this.ContextExpression.Push(exp);
             }
             else
             {
-                var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
+                var types = new List<Type>() { left.Type.GetTypeInfo().IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
                 var exp = Expression.Call(typeof(Enumerable), method.ToString(), types.ToArray(), left);
                 this.ContextExpression.Push(exp);
             }
-            
+
         }
 
         public void EnterContext(QNode node)
         {
             Type parameterType;
             var expression = this.ContextExpression.Peek();
-            parameterType = expression.Type.IsGenericType
+            parameterType = expression.Type.GetTypeInfo().IsGenericType
                                 ? expression.Type.GenericTypeArguments[0]
-                                : expression.Type.UnderlyingSystemType;
+                                : expression.Type.GetTypeInfo().UnderlyingSystemType;
 
             var parameter = Expression.Parameter(parameterType, string.Format("x{0}", this.parameterPrefix++));
             this.ContextParameters.Push(parameter);
@@ -115,11 +116,11 @@ namespace QData.ExpressionProvider.builder
         {
             var left = this.ContextExpression.Pop();
 
-            var bindingNodes = new Dictionary<string,QNode>();
+            var bindingNodes = new Dictionary<string, QNode>();
             var bindingPropertyNode = node.Right;
             while (bindingPropertyNode != null)
             {
-                bindingNodes.Add(Convert.ToString(bindingPropertyNode.Value),bindingPropertyNode.Right);
+                bindingNodes.Add(Convert.ToString(bindingPropertyNode.Value), bindingPropertyNode.Right);
                 bindingPropertyNode = bindingPropertyNode.Left;
             }
 
@@ -131,13 +132,13 @@ namespace QData.ExpressionProvider.builder
                 bindingNode.Value.Accept(this);
                 var member = this.ContextExpression.Pop();
                 bindingExpressions.Add(Convert.ToString(bindingNode.Key), member);
-                var property = new DynamicProperty(Convert.ToString(bindingNode.Key),member.Type);
+                var property = new DynamicProperty(Convert.ToString(bindingNode.Key), member.Type);
                 dynamicProperties.Add(property);
             }
 
             projectorType = ClassFactory.Instance.GetDynamicClass(dynamicProperties);
 
-            var resultProperties = projectorType.GetProperties();
+            var resultProperties = projectorType.GetTypeInfo().DeclaredProperties;
             var bindingsSource = new List<Expression>();
             var bindingsProperties = new List<PropertyInfo>();
             foreach (var binding in bindingExpressions)
@@ -155,7 +156,7 @@ namespace QData.ExpressionProvider.builder
 
             var lambda =
                 Expression.Lambda(
-                    Expression.MemberInit(Expression.New(projectorType.GetConstructor(Type.EmptyTypes)), bindings),
+                    Expression.MemberInit(Expression.New(projectorType.GetTypeInfo().GetConstructor(Type.EmptyTypes)), bindings),
                     this.ContextParameters.Peek());
 
             var result = this.BuildMethodCallExpression(MethodType.Select, left, lambda);
@@ -167,9 +168,9 @@ namespace QData.ExpressionProvider.builder
         public void VisitConstant(QNode node)
         {
             Type valueType = null;
-            if (node.Value.GetType().IsGenericType)
+            if (node.Value.GetType().GetTypeInfo().IsGenericType)
             {
-                valueType = node.Value.GetType().GetGenericArguments()[0];
+                valueType = node.Value.GetType().GetTypeInfo().GetGenericArguments()[0];
             }
             else
             {
@@ -179,7 +180,7 @@ namespace QData.ExpressionProvider.builder
             var memberType = this.ContextExpression.Peek().Type;
 
             //take skip
-            if (typeof(IQueryable).IsAssignableFrom(memberType))
+            if (typeof(IQueryable).GetTypeInfo().IsAssignableFrom(memberType))
             {
                 var exp = Expression.Constant(Convert.ToInt32(node.Value));
                 this.ContextExpression.Push(exp);
@@ -187,17 +188,21 @@ namespace QData.ExpressionProvider.builder
             }
             if (valueType != memberType)
             {
-                if (node.Value.GetType().IsGenericType)
+                if (node.Value.GetType().GetTypeInfo().IsGenericType)
                 {
                     var list = (List<string>)node.Value;
                     if (memberType == typeof(long))
                     {
-                        var exp = Expression.Constant(list.ConvertAll(Convert.ToInt64));
+                        var converted = new List<Int64>();
+                        list.ForEach(x => converted.Add(Convert.ToInt64(x)));
+                        var exp = Expression.Constant(converted);
                         this.ContextExpression.Push(exp);
                     }
                     else if (memberType == typeof(DateTime))
                     {
-                        var exp = Expression.Constant(list.ConvertAll(Convert.ToDateTime));
+                        var converted = new List<DateTime>();
+                        list.ForEach(x => converted.Add(Convert.ToDateTime(x)));
+                        var exp = Expression.Constant(converted);
                         this.ContextExpression.Push(exp);
                     }
                     else
@@ -214,12 +219,12 @@ namespace QData.ExpressionProvider.builder
                         throw new Exception(string.Format("VisitConstantNode :Type {0}", memberType));
                     }
                 }
-                else if (node.Value.GetType() == typeof (JArray))
+                else if (node.Value.GetType() == typeof(JArray))
                 {
                     var listType = typeof(List<>);
                     var concreteType = listType.MakeGenericType(memberType);
                     var valueList = Activator.CreateInstance(concreteType);
-                    var methodInfo = valueList.GetType().GetMethod("Add");
+                    var methodInfo = valueList.GetType().GetTypeInfo().GetMethod("Add");
                     foreach (var value in (JArray)node.Value)
                     {
                         methodInfo.Invoke(valueList, new object[] { value.ToObject(memberType) });
@@ -294,11 +299,11 @@ namespace QData.ExpressionProvider.builder
 
             if (binary == BinaryType.Contains)
             {
-                if (left.Type != typeof (string))
+                if (left.Type != typeof(string))
                 {
                     left = Expression.Call(left, "ToString", null);
                 }
-                
+
                 return Expression.Call(left, Methods.Contains, (ConstantExpression)right);
             }
 
@@ -308,7 +313,7 @@ namespace QData.ExpressionProvider.builder
                 {
                     left = Expression.Call(left, "ToString", null);
                 }
-                
+
                 return Expression.Call(left, Methods.StartsWith, (ConstantExpression)right);
             }
 
@@ -324,26 +329,26 @@ namespace QData.ExpressionProvider.builder
 
             if (binary == BinaryType.In)
             {
-                var method = right.Type.GetMethod("Contains");
+                var method = right.Type.GetTypeInfo().GetMethod("Contains");
                 return Expression.Call(right, method, left);
             }
 
             if (binary == BinaryType.NotIn)
             {
-                var method = right.Type.GetMethod("Contains");
+                var method = right.Type.GetTypeInfo().GetMethod("Contains");
                 var call = Expression.Call(right, method, left);
                 return Expression.Not(call);
             }
 
             if (binary == BinaryType.Take)
             {
-                var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
+                var types = new List<Type>() { left.Type.GetTypeInfo().IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
                 return Expression.Call(typeof(Queryable), "Take", types.ToArray(), left, right);
             }
 
             if (binary == BinaryType.Skip)
             {
-                var types = new List<Type>() { left.Type.IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
+                var types = new List<Type>() { left.Type.GetTypeInfo().IsGenericType ? left.Type.GenericTypeArguments[0] : left.Type };
                 return Expression.Call(typeof(Queryable), "Skip", types.ToArray(), left, right);
             }
             throw new Exception(binary.ToString());
@@ -354,7 +359,7 @@ namespace QData.ExpressionProvider.builder
             Expression caller,
             LambdaExpression argument)
         {
-            var types = new List<Type> { caller.Type.IsGenericType ? caller.Type.GenericTypeArguments[0] : caller.Type };
+            var types = new List<Type> { caller.Type.GetTypeInfo().IsGenericType ? caller.Type.GenericTypeArguments[0] : caller.Type };
 
             if (method == MethodType.Any)
             {
@@ -396,6 +401,6 @@ namespace QData.ExpressionProvider.builder
             throw new Exception(method.ToString());
         }
 
-        
+
     }
 }
