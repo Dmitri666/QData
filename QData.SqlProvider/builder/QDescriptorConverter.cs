@@ -167,17 +167,15 @@ namespace QData.ExpressionProvider.builder
 
         public void VisitConstant(QNode node)
         {
-            Type valueType = null;
-            if (node.Value.GetType().GetTypeInfo().IsGenericType)
-            {
-                valueType = node.Value.GetType().GetTypeInfo().GetGenericArguments()[0];
-            }
-            else
-            {
-                valueType = node.Value.GetType();
-            }
-
             var memberType = this.ContextExpression.Peek().Type;
+            var valueType = node.Value.GetType();
+
+            if (memberType == valueType)
+            {
+                var exp = Expression.Constant(node.Value, memberType);
+                this.ContextExpression.Push(exp);
+                return;
+            }
 
             //take skip
             if (typeof(IQueryable).GetTypeInfo().IsAssignableFrom(memberType))
@@ -186,9 +184,12 @@ namespace QData.ExpressionProvider.builder
                 this.ContextExpression.Push(exp);
                 return;
             }
-            if (valueType != memberType)
+
+            if (valueType.IsGenericType)
             {
-                if (node.Value.GetType().GetTypeInfo().IsGenericType)
+                var gValueType = valueType.GenericTypeArguments[0];
+                // In , not in
+                if (!memberType.IsGenericType)
                 {
                     var list = (List<string>)node.Value;
                     if (memberType == typeof(long))
@@ -219,31 +220,44 @@ namespace QData.ExpressionProvider.builder
                         throw new Exception(string.Format("VisitConstantNode :Type {0}", memberType));
                     }
                 }
-                else if (node.Value.GetType() == typeof(JArray))
-                {
-                    var listType = typeof(List<>);
-                    var concreteType = listType.MakeGenericType(memberType);
-                    var valueList = Activator.CreateInstance(concreteType);
-                    var methodInfo = valueList.GetType().GetTypeInfo().GetMethod("Add");
-                    foreach (var value in (JArray)node.Value)
-                    {
-                        methodInfo.Invoke(valueList, new object[] { value.ToObject(memberType) });
-                    }
-                    var exp = Expression.Constant(valueList);
-                    this.ContextExpression.Push(exp);
-                }
-                else
-                {
-                    var value = Convert.ChangeType(node.Value, memberType);
-                    var exp1 = Expression.Constant(value);
-                    this.ContextExpression.Push(exp1);
-                }
+               
             }
             else
             {
-                var exp = Expression.Constant(node.Value, this.ContextExpression.Peek().Type);
-                this.ContextExpression.Push(exp);
+
+                if (!memberType.IsGenericType)
+                {
+                    if (valueType == typeof(JArray))
+                    {
+                        var listType = typeof(List<>);
+                        var concreteType = listType.MakeGenericType(memberType);
+                        var valueList = Activator.CreateInstance(concreteType);
+                        var methodInfo = valueList.GetType().GetTypeInfo().GetMethod("Add");
+                        foreach (var value in (JArray)node.Value)
+                        {
+                            methodInfo.Invoke(valueList, new object[] { value.ToObject(memberType) });
+                        }
+                        var exp = Expression.Constant(valueList);
+                        this.ContextExpression.Push(exp);
+                    }
+                    else
+                    {
+                        var value = Convert.ChangeType(node.Value, memberType);
+                        var exp1 = Expression.Constant(value);
+                        this.ContextExpression.Push(exp1);
+                    }
+                   
+                }
+                else
+                {
+                    var gmemberType = memberType.GenericTypeArguments[0];
+                    var value = Convert.ChangeType(node.Value, gmemberType);
+                    var exp1 = Expression.Constant(value);
+                    var exp2 = Expression.Convert(exp1, memberType);
+                    this.ContextExpression.Push(exp2);
+                }
             }
+            
         }
 
         public void VisitBinary(QNode node)

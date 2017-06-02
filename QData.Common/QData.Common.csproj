@@ -35,10 +35,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-   
     <Compile Include="EnumResolver.cs" />
-    <Compile Include="IModelEntity.cs" />
-    <Compile Include="IProjection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types.cs" />
   </ItemGroup>

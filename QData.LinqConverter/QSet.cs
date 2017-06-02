@@ -13,7 +13,7 @@ namespace QData.LinqConverter
     using QData.Common;
 
     public class QSet<T> : EnumerableQuery<T> , IQSet
-        where T : IModelEntity
+        
     {
         public QSet()
             : base(new List<T>())

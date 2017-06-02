@@ -57,7 +57,7 @@ namespace QData.Client
             return null;
         }
 
-        public IEnumerable<TP> GetProjection<TP>(Uri accsessPoint, QDescriptor descriptor) where TP : IProjection
+        public IEnumerable<TP> GetProjection<TP>(Uri accsessPoint, QDescriptor descriptor) 
         {
             using (HttpClient client = new HttpClient())
             {
