@@ -7,6 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using QData.ExpressionProvider.builder;
 using QData.ExpressionProvider.Builder;
 
@@ -28,15 +29,15 @@ namespace QData.ExpressionProvider
     {
         #region Fields
 
-        private readonly QDescriptorConverter converter;
-
+        private readonly IQueryable query;
         #endregion
 
         #region Constructors and Destructors
 
         public ExpressionProvider(IQueryable query)
         {
-            this.converter = new QDescriptorConverter(query.Expression);
+            this.query = query;
+            
         }
 
         #endregion
@@ -45,8 +46,15 @@ namespace QData.ExpressionProvider
 
         public Expression ConvertToExpression(QDescriptor descriptor)
         {
-            descriptor.Root.Accept(this.converter);
-            return this.converter.ContextExpression.Pop();
+            var converter = new QDescriptorConverter(query.Expression);
+            descriptor.Root.Accept(converter);
+            return converter.ContextExpression.Pop();
+        }
+
+        public Expression GetFullTextSearchExpression(string queryString)
+        {
+            var builder = new FullTextSearchQueryBuilder(this.query, queryString);
+            return builder.GetExpression();
         }
 
         #endregion
