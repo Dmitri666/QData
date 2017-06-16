@@ -39,6 +39,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builder\FullTextSearchQueryBuilder.cs" />
     <Compile Include="Builder\IQNodeVisitor.cs" />
     <Compile Include="Builder\Methods.cs" />
     <Compile Include="Builder\QDescriptorConverter.cs" />
