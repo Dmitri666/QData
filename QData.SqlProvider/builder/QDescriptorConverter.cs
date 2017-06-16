@@ -273,12 +273,12 @@ namespace QData.ExpressionProvider.builder
         {
             if (binary == BinaryType.And)
             {
-                return Expression.And(left, right);
+                return Expression.AndAlso(left, right);
             }
 
             if (binary == BinaryType.Or)
             {
-                return Expression.Or(left, right);
+                return Expression.OrElse(left, right);
             }
 
             if (binary == BinaryType.Equal)

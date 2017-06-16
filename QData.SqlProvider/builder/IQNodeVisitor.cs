@@ -2,6 +2,9 @@
 
 namespace QData.ExpressionProvider.Builder
 {
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
+
     public interface IQNodeVisitor
     {
         void VisitBinary(QNode node);
@@ -23,7 +26,7 @@ namespace QData.ExpressionProvider.Builder
         void VisitEmptyMethod(QNode node);
 
 
-
+        Stack<Expression> ContextExpression { get; set; }
 
     }
 }

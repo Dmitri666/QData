@@ -3,6 +3,10 @@ using QData.Common;
 
 namespace QData.ExpressionProvider.Builder
 {
+    using System;
+    using System.Linq.Expressions;
+    using System.Runtime.CompilerServices;
+
     public static class QNodeExtentions
     {
         public static void Accept(this QNode node, IQNodeVisitor visitor)
@@ -51,6 +55,20 @@ namespace QData.ExpressionProvider.Builder
         private static void AcceptBinary(QNode node, IQNodeVisitor visitor)
         {
             node.Left.Accept(visitor);
+            BinaryType binaryType = EnumResolver.ResolveBinary(node.Value);
+            if (binaryType == BinaryType.Contains)
+            {
+                var left = visitor.ContextExpression.Peek();
+                var containsMethod = left.Type.GetMethod("Contains", new Type[] { typeof(string) });
+                if (containsMethod == null)
+                {
+                    var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
+                    var exp1 = Expression.Call(left, toStringMethod, null);
+                    visitor.ContextExpression.Pop();
+                    visitor.ContextExpression.Push(exp1);
+                }
+            }
+                
             node.Right.Accept(visitor);
             visitor.VisitBinary(node);
         }
