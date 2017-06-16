@@ -39,11 +39,14 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Builder\FullTextSearchQueryBuilder.cs" />
     <Compile Include="Builder\IQNodeVisitor.cs" />
     <Compile Include="Builder\Methods.cs" />
     <Compile Include="Builder\QDescriptorConverter.cs" />
     <Compile Include="Builder\QNodeExtentions.cs" />
+    <Compile Include="Converters\BaseConstantConverter.cs" />
+    <Compile Include="Converters\ArrayConverter.cs" />
+    <Compile Include="Converters\IntegerConverter.cs" />
+    <Compile Include="Converters\DefaultConverter.cs" />
     <Compile Include="ExpressionProvider.cs" />
     <Compile Include="LinqRuntimeClassBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

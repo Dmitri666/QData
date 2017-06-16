@@ -26,7 +26,7 @@ namespace QData.ExpressionProvider.Builder
         void VisitEmptyMethod(QNode node);
 
 
-        Stack<Expression> ContextExpression { get; set; }
+        void SetConstantConverter(QNode node);
 
     }
 }

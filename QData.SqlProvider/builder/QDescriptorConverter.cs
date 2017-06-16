@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.CodeDom;
+using Newtonsoft.Json.Linq;
 using QData.ExpressionProvider.Builder;
+using QData.ExpressionProvider.Converters;
 
 namespace QData.ExpressionProvider.builder
 {
@@ -41,7 +43,7 @@ namespace QData.ExpressionProvider.builder
         /// </summary>
         private Stack<ParameterExpression> ContextParameters { get; }
 
-
+        private BaseConstantConverter ConstantConverter { get; set; }
 
 
 
@@ -51,6 +53,87 @@ namespace QData.ExpressionProvider.builder
             this.ContextExpression = new Stack<Expression>();
             this.ContextParameters = new Stack<ParameterExpression>();
             this.Query = query;
+        }
+
+        public void SetConstantConverter(QNode node)
+        {
+            var left = this.ContextExpression.Peek();
+            BinaryType binaryType = EnumResolver.ResolveBinary(node.Value);
+            switch (binaryType)
+            {
+                case BinaryType.Contains:
+                    var containsMethod = left.Type.GetMethod("Contains", new Type[] {typeof (string)});
+                    if (containsMethod == null)
+                    {
+                        var toStringMethod = typeof (object).GetMethod("ToString", new Type[] {});
+                        var exp1 = Expression.Call(left, toStringMethod, null);
+                        this.ContextExpression.Pop();
+                        this.ContextExpression.Push(exp1);
+                        this.ConstantConverter = new DefaultConverter(exp1.Type);
+                    }
+                    else
+                    {
+                        this.ConstantConverter = new DefaultConverter(left.Type);
+                    }
+
+                    break;
+                case BinaryType.StartsWith:
+                    var startsWithMethod = left.Type.GetMethod("StartsWith", new Type[] {typeof (string)});
+                    if (startsWithMethod == null)
+                    {
+                        var toStringMethod = typeof (object).GetMethod("ToString", new Type[] {});
+                        var exp1 = Expression.Call(left, toStringMethod, null);
+                        this.ContextExpression.Pop();
+                        this.ContextExpression.Push(exp1);
+                        this.ConstantConverter = new DefaultConverter(exp1.Type);
+                    }
+                    else
+                    {
+                        this.ConstantConverter = new DefaultConverter(left.Type);
+                    }
+
+                    break;
+                case BinaryType.EndsWith:
+                    var endsWithMethod = left.Type.GetMethod("EndsWith", new Type[] {typeof (string)});
+                    if (endsWithMethod == null)
+                    {
+                        var toStringMethod = typeof (object).GetMethod("ToString", new Type[] {});
+                        var exp1 = Expression.Call(left, toStringMethod, null);
+                        this.ContextExpression.Pop();
+                        this.ContextExpression.Push(exp1);
+                        this.ConstantConverter = new DefaultConverter(exp1.Type);
+                    }
+                    else
+                    {
+                        this.ConstantConverter = new DefaultConverter(left.Type);
+                    }
+
+                    break;
+                case BinaryType.In:
+                case BinaryType.NotIn:
+                    this.ConstantConverter = new ArrayConverter(left.Type);
+                    break;
+                case BinaryType.Skip:
+                case BinaryType.Take:
+                    this.ConstantConverter = new IntegerConverter(left.Type);
+                    break;
+                case BinaryType.And:
+                case BinaryType.Or:
+                    break;
+                case BinaryType.Equal:
+                case BinaryType.GreaterThan:
+                case BinaryType.GreaterThanOrEqual:
+                case BinaryType.LessThan:
+                case BinaryType.LessThanOrEqual:
+                case BinaryType.NotEqual:
+                    this.ConstantConverter = new DefaultConverter(left.Type);
+                    break;
+                default:
+                    throw new NotImplementedException(binaryType.ToString());
+
+
+            }
+
         }
 
         public void VisitMember(QNode node)
@@ -83,7 +166,8 @@ namespace QData.ExpressionProvider.builder
             var method = EnumResolver.ResolveMethod(node.Value);
             if (method == MethodType.ToString)
             {
-                var exp = Expression.Call(left, method.ToString(), null);
+                var toStringMethod = typeof(object).GetMethod("ToString", new Type[] {});
+                var exp = Expression.Call(left, toStringMethod, null);
                 this.ContextExpression.Push(exp);
             }
             else
@@ -167,97 +251,8 @@ namespace QData.ExpressionProvider.builder
 
         public void VisitConstant(QNode node)
         {
-            var memberType = this.ContextExpression.Peek().Type;
-            var valueType = node.Value.GetType();
-
-            if (memberType == valueType)
-            {
-                var exp = Expression.Constant(node.Value, memberType);
-                this.ContextExpression.Push(exp);
-                return;
-            }
-
-            //take skip
-            if (typeof(IQueryable).GetTypeInfo().IsAssignableFrom(memberType))
-            {
-                var exp = Expression.Constant(Convert.ToInt32(node.Value));
-                this.ContextExpression.Push(exp);
-                return;
-            }
-
-            if (valueType.IsGenericType)
-            {
-                var gValueType = valueType.GenericTypeArguments[0];
-                // In , not in
-                if (!memberType.IsGenericType)
-                {
-                    var list = (List<string>)node.Value;
-                    if (memberType == typeof(long))
-                    {
-                        var converted = new List<Int64>();
-                        list.ForEach(x => converted.Add(Convert.ToInt64(x)));
-                        var exp = Expression.Constant(converted);
-                        this.ContextExpression.Push(exp);
-                    }
-                    else if (memberType == typeof(DateTime))
-                    {
-                        var converted = new List<DateTime>();
-                        list.ForEach(x => converted.Add(Convert.ToDateTime(x)));
-                        var exp = Expression.Constant(converted);
-                        this.ContextExpression.Push(exp);
-                    }
-                    else
-                    {
-                        //var listType = typeof(List<>);
-                        //var concreteType = listType.MakeGenericType(memberType);
-                        //var valueList = Activator.CreateInstance(concreteType);
-                        //var methodInfo = valueList.GetType().GetMethod("Add");
-                        //foreach (var stringValue in (List<string>)node.Value)
-                        //{
-                        //    var value = ConvertConstant(stringValue, propertyMap.DestinationPropertyType, out operatorType);
-                        //    methodInfo.Invoke(valueList, new object[] { value });
-                        //}
-                        throw new Exception(string.Format("VisitConstantNode :Type {0}", memberType));
-                    }
-                }
-               
-            }
-            else
-            {
-
-                if (!memberType.IsGenericType)
-                {
-                    if (valueType == typeof(JArray))
-                    {
-                        var listType = typeof(List<>);
-                        var concreteType = listType.MakeGenericType(memberType);
-                        var valueList = Activator.CreateInstance(concreteType);
-                        var methodInfo = valueList.GetType().GetTypeInfo().GetMethod("Add");
-                        foreach (var value in (JArray)node.Value)
-                        {
-                            methodInfo.Invoke(valueList, new object[] { value.ToObject(memberType) });
-                        }
-                        var exp = Expression.Constant(valueList);
-                        this.ContextExpression.Push(exp);
-                    }
-                    else
-                    {
-                        var value = Convert.ChangeType(node.Value, memberType);
-                        var exp1 = Expression.Constant(value);
-                        this.ContextExpression.Push(exp1);
-                    }
-                   
-                }
-                else
-                {
-                    var gmemberType = memberType.GenericTypeArguments[0];
-                    var value = Convert.ChangeType(node.Value, gmemberType);
-                    var exp1 = Expression.Constant(value);
-                    var exp2 = Expression.Convert(exp1, memberType);
-                    this.ContextExpression.Push(exp2);
-                }
-            }
-            
+            var constantExpression = this.ConstantConverter.ConvertToConstant(node);
+            this.ContextExpression.Push(constantExpression);
         }
 
         public void VisitBinary(QNode node)

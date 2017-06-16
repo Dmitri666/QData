@@ -51,11 +51,7 @@ namespace QData.ExpressionProvider
             return converter.ContextExpression.Pop();
         }
 
-        public Expression GetFullTextSearchExpression(string queryString)
-        {
-            var builder = new FullTextSearchQueryBuilder(this.query, queryString);
-            return builder.GetExpression();
-        }
+        
 
         #endregion
     }

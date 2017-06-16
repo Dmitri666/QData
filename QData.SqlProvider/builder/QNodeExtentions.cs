@@ -55,19 +55,11 @@ namespace QData.ExpressionProvider.Builder
         private static void AcceptBinary(QNode node, IQNodeVisitor visitor)
         {
             node.Left.Accept(visitor);
-            BinaryType binaryType = EnumResolver.ResolveBinary(node.Value);
-            if (binaryType == BinaryType.Contains)
+            if (node.Right.Type == NodeType.Constant)
             {
-                var left = visitor.ContextExpression.Peek();
-                var containsMethod = left.Type.GetMethod("Contains", new Type[] { typeof(string) });
-                if (containsMethod == null)
-                {
-                    var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
-                    var exp1 = Expression.Call(left, toStringMethod, null);
-                    visitor.ContextExpression.Pop();
-                    visitor.ContextExpression.Push(exp1);
-                }
+                visitor.SetConstantConverter(node);
             }
+            
                 
             node.Right.Accept(visitor);
             visitor.VisitBinary(node);
