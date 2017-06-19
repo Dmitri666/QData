@@ -16,6 +16,6 @@ namespace QData.ExpressionProvider.Converters
         {
             this.target = target;
         }
-        public abstract ConstantExpression ConvertToConstant(QNode node);
+        public abstract Expression ConvertToConstant(QNode node);
     }
 }

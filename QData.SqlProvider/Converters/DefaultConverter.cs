@@ -15,7 +15,7 @@ namespace QData.ExpressionProvider.Converters
 
         }
 
-        public override ConstantExpression ConvertToConstant(QNode node)
+        public override Expression ConvertToConstant(QNode node)
         {
             var valueType = node.Value.GetType();
 
@@ -28,14 +28,16 @@ namespace QData.ExpressionProvider.Converters
                     return Expression.Constant(node.Value);
 
                 }
-                return Expression.Constant(node.Value, target);
+
+                var value = Convert.ChangeType(node.Value, target);
+                return Expression.Constant(value, target);
             }
 
             if (nullableUnderlyingType != valueType)
             {
                 var value = Convert.ChangeType(node.Value, nullableUnderlyingType);
                 var exp1 = Expression.Constant(value);
-                return Expression.Constant(Expression.Convert(exp1, target));
+                return Expression.Convert(exp1, target);
             }
             else
             {

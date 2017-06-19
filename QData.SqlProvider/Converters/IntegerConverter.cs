@@ -15,7 +15,7 @@ namespace QData.ExpressionProvider.Converters
 
         }
 
-        public override ConstantExpression ConvertToConstant(QNode node)
+        public override Expression ConvertToConstant(QNode node)
         {
             return Expression.Constant(System.Convert.ToInt32(node.Value));
         }

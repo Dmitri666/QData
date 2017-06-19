@@ -17,7 +17,7 @@ namespace QData.ExpressionProvider.Converters
 
         }
 
-        public override ConstantExpression ConvertToConstant(QNode node)
+        public override Expression ConvertToConstant(QNode node)
         {
             var valueType = node.Value.GetType();
             if (valueType.IsGenericType)
