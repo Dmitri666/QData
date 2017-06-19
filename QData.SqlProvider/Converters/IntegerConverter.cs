@@ -8,7 +8,7 @@ using Qdata.Json.Contract;
 
 namespace QData.ExpressionProvider.Converters
 {
-    public class IntegerConverter : BaseConstantConverter
+    public class IntegerConverter : DefaultConverter
     {
         public IntegerConverter(Type target) : base(target)
         {

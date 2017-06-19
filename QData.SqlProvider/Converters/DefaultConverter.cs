@@ -8,14 +8,15 @@ using Qdata.Json.Contract;
 
 namespace QData.ExpressionProvider.Converters
 {
-    public class DefaultConverter : BaseConstantConverter
+    public class DefaultConverter 
     {
-        public DefaultConverter(Type target) : base(target)
+        protected Type target { get; set; }
+        public DefaultConverter(Type target) 
         {
-
+            this.target = target;
         }
 
-        public override Expression ConvertToConstant(QNode node)
+        public virtual Expression ConvertToConstant(QNode node)
         {
             var valueType = node.Value.GetType();
 

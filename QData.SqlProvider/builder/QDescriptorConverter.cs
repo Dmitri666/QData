@@ -43,7 +43,7 @@ namespace QData.ExpressionProvider.builder
         /// </summary>
         private Stack<ParameterExpression> ContextParameters { get; }
 
-        private BaseConstantConverter ConstantConverter { get; set; }
+        private DefaultConverter ConstantConverter { get; set; }
 
 
 

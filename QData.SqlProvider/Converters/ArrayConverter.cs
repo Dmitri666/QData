@@ -10,7 +10,7 @@ using Qdata.Json.Contract;
 
 namespace QData.ExpressionProvider.Converters
 {
-    public class ArrayConverter : BaseConstantConverter
+    public class ArrayConverter : DefaultConverter
     {
         public ArrayConverter(Type target) : base(target)
         {
