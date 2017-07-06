@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace Qdata.Contract
 {
@@ -14,7 +13,6 @@ namespace Qdata.Contract
 
         public QNode Right { get; set; }
 
-        [JsonConverter(typeof(EnumResolver))]
         public object Value { get; set; }
     }
 }

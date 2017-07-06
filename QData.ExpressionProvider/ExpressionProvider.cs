@@ -10,7 +10,6 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Qdata.Contract;
-using QData.ExpressionProvider.builder;
 using QData.ExpressionProvider.Builder;
 
 namespace QData.ExpressionProvider

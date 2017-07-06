@@ -5,10 +5,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Qdata.Contract;
-using QData.ExpressionProvider.Builder;
 using QData.ExpressionProvider.Converters;
 
-namespace QData.ExpressionProvider.builder
+namespace QData.ExpressionProvider.Builder
 {
     public class QDescriptorConverter : IQNodeVisitor
     {
