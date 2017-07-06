@@ -1,4 +1,4 @@
-﻿namespace QData.Common
+﻿namespace Qdata.Contract
 {
     public enum NodeType
     {

@@ -1,4 +1,4 @@
-﻿using Qdata.Json.Contract;
+﻿using Qdata.Contract;
 
 namespace QData.ExpressionProvider.Builder
 {

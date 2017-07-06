@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}</ProjectGuid>
+    <ProjectGuid>{91C56CF0-5343-4E8C-8C6D-FAFBAF2BEDAA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QData.Deployment</RootNamespace>
-    <AssemblyName>QData.Deployment</AssemblyName>
+    <RootNamespace>Qdata.Contract</RootNamespace>
+    <AssemblyName>Qdata.Contract</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,27 +31,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnumResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QDescriptor.cs" />
+    <Compile Include="QNode.cs" />
+    <Compile Include="Types.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="package.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Template.tst" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="ContactDto.ts">
-      <DependentUpon>Template.tst</DependentUpon>
-      <CustomToolNamespace>..\Example.Data.Contract\Model\ContactDto.cs</CustomToolNamespace>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="CustomerDto.ts">
-      <DependentUpon>Template.tst</DependentUpon>
-      <CustomToolNamespace>..\Example.Data.Contract\Model\CustomerDto.cs</CustomToolNamespace>
-    </TypeScriptCompile>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

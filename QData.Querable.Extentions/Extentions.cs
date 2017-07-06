@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Dynamic;
+
 namespace QData.Querable.Extentions
 {
     using System;
@@ -14,8 +16,7 @@ namespace QData.Querable.Extentions
     using System.Linq;
     using System.Linq.Expressions;
 
-    using QData.Common;
-
+    
     public static class Extentions
     {
         public static object Execute(this IQueryable source,Expression expression) 
@@ -59,6 +60,6 @@ namespace QData.Querable.Extentions
             };
         }
 
-
+        
     }
 }

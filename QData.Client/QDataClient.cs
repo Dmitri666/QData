@@ -12,9 +12,9 @@ namespace QData.Client
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
-    using Qdata.Json.Contract;
+    using Qdata.Contract;
 
-    using QData.Common;
+    
 
     public class QDataClient
     {
@@ -101,6 +101,31 @@ namespace QData.Client
                     var res = JsonConvert.DeserializeObject(jsonContent, targetType);
                     var methodInfo = result.GetType().GetTypeInfo().GetMethod("AddRange");
                     methodInfo.Invoke(result, new object[] {res});
+                }
+            }
+        }
+
+        public void Get(Uri accsessPoint, ProjectionRequest request, Type returnType, object result)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(request, Settings);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                Task<HttpResponseMessage> response =
+                    client.PostAsync(accsessPoint, content);
+
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    string jsonContent = response.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
+
+                    var listType = typeof(IEnumerable<>);
+                    var targetType = listType.MakeGenericType(returnType);
+                    var res = JsonConvert.DeserializeObject(jsonContent, targetType);
+                    var methodInfo = result.GetType().GetTypeInfo().GetMethod("AddRange");
+                    methodInfo.Invoke(result, new object[] { res });
                 }
             }
         }

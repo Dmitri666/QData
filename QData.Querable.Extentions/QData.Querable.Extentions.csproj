@@ -47,20 +47,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QData.Common\QData.Common.csproj">
-      <Project>{517f9bd0-4757-4eb0-af01-7f8a76e6c303}</Project>
-      <Name>QData.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Qdata.Json.Contract\Qdata.Json.Contract.csproj">
-      <Project>{25e33edf-5c4c-450c-b11a-35ecc66155f9}</Project>
-      <Name>Qdata.Json.Contract</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QData.SqlProvider\QData.ExpressionProvider.csproj">
-      <Project>{70e07dc3-22d6-400b-b5a1-c3beabf406d8}</Project>
-      <Name>QData.ExpressionProvider</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace Qdata.Json.Contract
+namespace Qdata.Contract
 {
-    using QData.Common;
     public class QDescriptor
     {
         public QDescriptor()

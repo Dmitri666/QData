@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Qdata.Json.Contract;
+using Qdata.Contract;
 
 namespace QData.ExpressionProvider.Converters
 {
-    public class DefaultConverter 
+    public class DefaultConverter
     {
-        protected Type target { get; set; }
-        public DefaultConverter(Type target) 
+        public DefaultConverter(Type target)
         {
             this.target = target;
         }
+
+        protected Type target { get; set; }
 
         public virtual Expression ConvertToConstant(QNode node)
         {
@@ -23,11 +20,9 @@ namespace QData.ExpressionProvider.Converters
             var nullableUnderlyingType = Nullable.GetUnderlyingType(target);
             if (nullableUnderlyingType == null)
             {
-
                 if (target == valueType)
                 {
                     return Expression.Constant(node.Value);
-
                 }
 
                 var value = Convert.ChangeType(node.Value, target);
@@ -45,7 +40,6 @@ namespace QData.ExpressionProvider.Converters
                 var exp1 = Expression.Constant(node.Value);
                 return Expression.Constant(Expression.Convert(exp1, target));
             }
-
         }
     }
 }

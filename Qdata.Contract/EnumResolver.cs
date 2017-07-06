@@ -1,8 +1,9 @@
 ﻿using System;
+using Newtonsoft.Json;
 
-namespace QData.Common
+namespace Qdata.Contract
 {
-    public class EnumResolver
+    public class EnumResolver 
     {
         public static MethodType ResolveMethod(object value)
         {
@@ -33,5 +34,7 @@ namespace QData.Common
 
             return op;
         }
+
+        
     }
 }

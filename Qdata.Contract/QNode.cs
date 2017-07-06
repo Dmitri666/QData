@@ -1,9 +1,10 @@
 ﻿using System;
-using QData.Common;
+using Newtonsoft.Json;
 
-namespace Qdata.Json.Contract
+namespace Qdata.Contract
 {
     [Serializable]
+   
     public class QNode
     {
 
@@ -13,6 +14,7 @@ namespace Qdata.Json.Contract
 
         public QNode Right { get; set; }
 
+        [JsonConverter(typeof(EnumResolver))]
         public object Value { get; set; }
     }
 }

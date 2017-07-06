@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+using Qdata.Contract;
 
 namespace QData.LinqConverter
 {
-    using System.Linq.Expressions;
+    public class QSet<T> : EnumerableQuery<T>, IQSet
 
-    using Qdata.Json.Contract;
-
-    using QData.Common;
-
-    public class QSet<T> : EnumerableQuery<T> , IQSet
-        
     {
         public QSet()
             : base(new List<T>())
         {
-
         }
+
         public QSet(IEnumerable<T> enumerable)
             : base(enumerable)
         {
@@ -34,7 +27,7 @@ namespace QData.LinqConverter
         {
             var con = new ExpressionConverter();
             var root = con.Convert(query.Expression);
-            return new QDescriptor() { Root = root };
+            return new QDescriptor {Root = root};
         }
     }
 }

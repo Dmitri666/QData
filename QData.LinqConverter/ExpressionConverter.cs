@@ -10,8 +10,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Qdata.Json.Contract;
-using QData.Common;
+using Qdata.Contract;
+
 
 
 namespace QData.LinqConverter

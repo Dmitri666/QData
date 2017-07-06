@@ -3,32 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Common", "QData.Common\QData.Common.csproj", "{517F9BD0-4757-4EB0-AF01-7F8A76E6C303}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qdata.Json.Contract", "Qdata.Json.Contract\Qdata.Json.Contract.csproj", "{25E33EDF-5C4C-450C-B11A-35ECC66155F9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.LinqConverter", "QData.LinqConverter\QData.LinqConverter.csproj", "{2A69873B-A671-4DA6-BB14-F9839E07E386}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Querable.Extentions", "QData.Model\QData.Querable.Extentions.csproj", "{6EF17A95-8160-4C31-9882-DF71F025CEE7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.ExpressionProvider", "QData.SqlProvider\QData.ExpressionProvider.csproj", "{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Deployment", "QData.Deployment\QData.Deployment.csproj", "{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Client", "QData.Client\QData.Client.csproj", "{D7899103-5C66-42B3-A80B-43935B91EC7E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44973E44-7830-480E-A9F5-A35F079074A6}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qdata.Contract", "Qdata.Contract\Qdata.Contract.csproj", "{91C56CF0-5343-4E8C-8C6D-FAFBAF2BEDAA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{29641CEC-AA51-4E0C-B365-BF945948CA9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.ExpressionProvider", "QData.ExpressionProvider\QData.ExpressionProvider.csproj", "{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QData.Client", "src\QData.Client\QData.Client.xproj", "{1E2131AA-DCB2-43B2-B635-C65317661315}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QData.Json.Contract", "src\QData.Json.Contract\QData.Json.Contract.xproj", "{8BACB8C1-3840-4E48-A705-581E5C742079}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QData.Common", "src\QData.Common\QData.Common.xproj", "{2F5D92BE-68EE-4B21-9B56-4A821E7C7790}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Querable.Extentions", "QData.Querable.Extentions\QData.Querable.Extentions.csproj", "{6EF17A95-8160-4C31-9882-DF71F025CEE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,53 +19,28 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{517F9BD0-4757-4EB0-AF01-7F8A76E6C303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{517F9BD0-4757-4EB0-AF01-7F8A76E6C303}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{517F9BD0-4757-4EB0-AF01-7F8A76E6C303}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{517F9BD0-4757-4EB0-AF01-7F8A76E6C303}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25E33EDF-5C4C-450C-B11A-35ECC66155F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25E33EDF-5C4C-450C-B11A-35ECC66155F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25E33EDF-5C4C-450C-B11A-35ECC66155F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25E33EDF-5C4C-450C-B11A-35ECC66155F9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A69873B-A671-4DA6-BB14-F9839E07E386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2A69873B-A671-4DA6-BB14-F9839E07E386}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A69873B-A671-4DA6-BB14-F9839E07E386}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A69873B-A671-4DA6-BB14-F9839E07E386}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83A6F52E-3310-4A38-BFC5-6FC796F0CD4E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7899103-5C66-42B3-A80B-43935B91EC7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E2131AA-DCB2-43B2-B635-C65317661315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E2131AA-DCB2-43B2-B635-C65317661315}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E2131AA-DCB2-43B2-B635-C65317661315}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E2131AA-DCB2-43B2-B635-C65317661315}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8BACB8C1-3840-4E48-A705-581E5C742079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8BACB8C1-3840-4E48-A705-581E5C742079}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8BACB8C1-3840-4E48-A705-581E5C742079}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8BACB8C1-3840-4E48-A705-581E5C742079}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F5D92BE-68EE-4B21-9B56-4A821E7C7790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F5D92BE-68EE-4B21-9B56-4A821E7C7790}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F5D92BE-68EE-4B21-9B56-4A821E7C7790}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F5D92BE-68EE-4B21-9B56-4A821E7C7790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91C56CF0-5343-4E8C-8C6D-FAFBAF2BEDAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91C56CF0-5343-4E8C-8C6D-FAFBAF2BEDAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91C56CF0-5343-4E8C-8C6D-FAFBAF2BEDAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91C56CF0-5343-4E8C-8C6D-FAFBAF2BEDAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1E2131AA-DCB2-43B2-B635-C65317661315} = {29641CEC-AA51-4E0C-B365-BF945948CA9E}
-		{8BACB8C1-3840-4E48-A705-581E5C742079} = {29641CEC-AA51-4E0C-B365-BF945948CA9E}
-		{2F5D92BE-68EE-4B21-9B56-4A821E7C7790} = {29641CEC-AA51-4E0C-B365-BF945948CA9E}
 	EndGlobalSection
 EndGlobal

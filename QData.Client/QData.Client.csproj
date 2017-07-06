@@ -31,8 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -40,21 +40,18 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProjectionRequest.cs" />
     <Compile Include="QDataClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Qdata.Contract\Qdata.Contract.csproj">
+      <Project>{91c56cf0-5343-4e8c-8c6d-fafbaf2bedaa}</Project>
+      <Name>Qdata.Contract</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QData.Common\QData.Common.csproj">
-      <Project>{517f9bd0-4757-4eb0-af01-7f8a76e6c303}</Project>
-      <Name>QData.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Qdata.Json.Contract\Qdata.Json.Contract.csproj">
-      <Project>{25e33edf-5c4c-450c-b11a-35ecc66155f9}</Project>
-      <Name>Qdata.Json.Contract</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

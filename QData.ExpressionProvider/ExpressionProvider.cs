@@ -7,19 +7,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
+using System.Linq;
+using System.Linq.Expressions;
+using Qdata.Contract;
 using QData.ExpressionProvider.builder;
 using QData.ExpressionProvider.Builder;
 
 namespace QData.ExpressionProvider
 {
-    using System.Linq;
-    using System.Linq.Expressions;
-
-    using Qdata.Json.Contract;
-
-    using QData.Common;
-
     /// <summary>
     ///     The repository impl.
     /// </summary>
@@ -30,6 +25,7 @@ namespace QData.ExpressionProvider
         #region Fields
 
         private readonly IQueryable query;
+
         #endregion
 
         #region Constructors and Destructors
@@ -37,7 +33,6 @@ namespace QData.ExpressionProvider
         public ExpressionProvider(IQueryable query)
         {
             this.query = query;
-            
         }
 
         #endregion
@@ -46,12 +41,10 @@ namespace QData.ExpressionProvider
 
         public Expression ConvertToExpression(QDescriptor descriptor)
         {
-            var converter = new QDescriptorConverter(query.Expression);
+            var converter = new QDescriptorConverter(query);
             descriptor.Root.Accept(converter);
             return converter.ContextExpression.Pop();
         }
-
-        
 
         #endregion
     }

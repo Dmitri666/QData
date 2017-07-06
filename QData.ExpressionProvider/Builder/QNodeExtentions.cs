@@ -1,24 +1,19 @@
-﻿using Qdata.Json.Contract;
-using QData.Common;
+﻿using Qdata.Contract;
 
 namespace QData.ExpressionProvider.Builder
 {
-    using System;
-    using System.Linq.Expressions;
-    using System.Runtime.CompilerServices;
-
     public static class QNodeExtentions
     {
         public static void Accept(this QNode node, IQNodeVisitor visitor)
         {
             if (node.Type == NodeType.Binary)
             {
-                AcceptBinary(node,visitor);
+                AcceptBinary(node, visitor);
             }
 
             if (node.Type == NodeType.Member)
             {
-                AcceptMember(node,visitor);
+                AcceptMember(node, visitor);
             }
 
             if (node.Type == NodeType.Querable)
@@ -28,7 +23,7 @@ namespace QData.ExpressionProvider.Builder
 
             if (node.Type == NodeType.Method)
             {
-                MethodType method = EnumResolver.ResolveMethod(node.Value);
+                var method = EnumResolver.ResolveMethod(node.Value);
 
                 if (method == MethodType.Select)
                 {
@@ -42,14 +37,12 @@ namespace QData.ExpressionProvider.Builder
                 {
                     AcceptMethod(node, visitor);
                 }
-                
             }
 
             if (node.Type == NodeType.Constant)
             {
                 AcceptConstant(node, visitor);
             }
-
         }
 
         private static void AcceptBinary(QNode node, IQNodeVisitor visitor)
@@ -59,8 +52,8 @@ namespace QData.ExpressionProvider.Builder
             {
                 visitor.SetConstantConverter(node);
             }
-            
-                
+
+
             node.Right.Accept(visitor);
             visitor.VisitBinary(node);
         }
@@ -83,7 +76,6 @@ namespace QData.ExpressionProvider.Builder
             node.Right.Accept(visitor);
             visitor.VisitMethod(node);
             visitor.LeaveContext(node);
-
         }
 
         public static void AcceptEmptyMethod(QNode node, IQNodeVisitor visitor)
@@ -98,7 +90,6 @@ namespace QData.ExpressionProvider.Builder
             visitor.EnterContext(node);
             visitor.VisitProjection(node);
             visitor.LeaveContext(node);
-
         }
 
         private static void AcceptConstant(QNode node, IQNodeVisitor visitor)
