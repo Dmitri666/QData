@@ -35,7 +35,7 @@ namespace QData.Client
             Settings.Converters = new List<JsonConverter> { dateTimeConverter };
         }
 
-        public IEnumerable<T> Get<T>(Uri accsessPoint, QDescriptor descriptor)
+        public IEnumerable<T> Get<T>(Uri accsessPoint, QNode descriptor)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -57,7 +57,7 @@ namespace QData.Client
             return null;
         }
 
-        public IEnumerable<TP> GetProjection<TP>(Uri accsessPoint, QDescriptor descriptor) 
+        public IEnumerable<TP> GetProjection<TP>(Uri accsessPoint, QNode descriptor) 
         {
             using (HttpClient client = new HttpClient())
             {
@@ -80,7 +80,7 @@ namespace QData.Client
 
         }
 
-        public void Get(Uri accsessPoint, QDescriptor descriptor, Type returnType, object result)
+        public void Get(Uri accsessPoint, QNode descriptor, Type returnType, object result)
         {
             using (HttpClient client = new HttpClient())
             {

@@ -6,8 +6,8 @@ namespace QData.Client
     [Serializable]
     public class ProjectionRequest
     {
-        public QDescriptor SearchDescriptor { get; set; }
+        public QNode SearchDescriptor { get; set; }
 
-        public QDescriptor ProjectionDescriptor { get; set; }
+        public QNode ProjectionDescriptor { get; set; }
     }
 }

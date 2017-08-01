@@ -36,7 +36,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstantPlaceHolder.cs" />
-    <Compile Include="ExpressionConverter.cs" />
+    <Compile Include="ExpressionSerializer.cs" />
+    <Compile Include="Extentions\QuerableExtentions.cs" />
     <Compile Include="IConstantPlaceHolder.cs" />
     <Compile Include="IQSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -14,12 +14,16 @@ using QData.ExpressionProvider.Builder;
 
 namespace QData.ExpressionProvider
 {
+    using System.Collections.Generic;
+
+    using QData.ExpressionProvider.PreProcessor;
+
     /// <summary>
     ///     The repository impl.
     /// </summary>
     /// <typeparam name="TEntity">
     /// </typeparam>
-    public class ExpressionProvider
+    public class QNodeDeserializer
     {
         #region Fields
 
@@ -29,7 +33,7 @@ namespace QData.ExpressionProvider
 
         #region Constructors and Destructors
 
-        public ExpressionProvider(IQueryable query)
+        public QNodeDeserializer(IQueryable query)
         {
             this.query = query;
         }
@@ -38,13 +42,21 @@ namespace QData.ExpressionProvider
 
         #region Public Methods and Operators
 
-        public Expression ConvertToExpression(QDescriptor descriptor)
+        public Expression Deserialize(QNode descriptor)
         {
-            var converter = new QDescriptorConverter(query);
-            descriptor.Root.Accept(converter);
+            QNode root = descriptor;
+            var providerType = this.query.Provider.GetType();
+            if (providerType.Name.Contains("DbQueryProvider") || providerType.Name.Contains("EnumerableQuery"))
+            {
+                root = new DbQueryProviderPreprocessor().Prepare(root);
+            }
+            var converter = new QNodeConverter(this.query);
+            
+            root.Accept(converter);
             return converter.ContextExpression.Pop();
         }
 
+        
         #endregion
     }
 }

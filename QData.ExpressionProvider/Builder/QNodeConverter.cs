@@ -9,9 +9,9 @@ using QData.ExpressionProvider.Converters;
 
 namespace QData.ExpressionProvider.Builder
 {
-    public class QDescriptorConverter : IQNodeVisitor
+    internal class QNodeConverter : IQNodeVisitor
     {
-        public QDescriptorConverter(IQueryable query)
+        public QNodeConverter(IQueryable query)
         {
             ContextExpression = new Stack<Expression>();
             ContextParameters = new Stack<ParameterExpression>();

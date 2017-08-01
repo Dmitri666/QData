@@ -19,16 +19,16 @@ namespace QData.LinqConverter
     /// <summary>
     ///     The my expression visitor.
     /// </summary>
-    public class ExpressionConverter : ExpressionVisitor
+    internal class ExpressionSerializer : ExpressionVisitor
     {
         // : ExpressionVisitor
 
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ExpressionConverter" /> class.
+        ///     Initializes a new instance of the <see cref="ExpressionSerializer" /> class.
         /// </summary>
-        public ExpressionConverter()
+        public ExpressionSerializer()
         {
             this.Context = new Stack<QNode>();
             this.IsNot = new Stack<ExpressionType>();
@@ -48,7 +48,7 @@ namespace QData.LinqConverter
 
         #region Public Methods and Operators
 
-        public QNode Convert(Expression exp)
+        public QNode Serialize(Expression exp)
         {
             this.Visit(exp);
             return this.Context.Peek();
@@ -127,7 +127,7 @@ namespace QData.LinqConverter
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
 
-                // return this.VisitNewArray((NewArrayExpression)exp);
+                     return this.VisitNewArray((NewArrayExpression)exp);
                 case ExpressionType.Invoke:
 
                     // return this.VisitInvocation((InvocationExpression)exp);
@@ -381,10 +381,20 @@ namespace QData.LinqConverter
             {
                 this.Visit(m.Arguments[0]);
                 node.Left = this.Context.Pop();
-                if (m.Arguments.Count > 1)
+                if (m.Arguments.Count == 2)
                 {
                     this.Visit(m.Arguments[1]);
                     node.Right = this.Context.Pop();
+                }
+                // QueryString
+                else if (m.Arguments.Count == 3)
+                {
+                    this.Visit(m.Arguments[1]);
+                    var queryString = this.Context.Pop();
+                    this.Visit(m.Arguments[2]);
+                    var fields = this.Context.Pop();
+                    queryString.Right = fields;
+                    node.Right = queryString;
                 }
             }
 
@@ -392,6 +402,39 @@ namespace QData.LinqConverter
             return m;
         }
 
+        protected override Expression VisitNewArray(NewArrayExpression exp)
+        {
+            List<QNode> memberArray = new List<QNode>();
+            foreach (var member in exp.Expressions)
+            {
+                this.Visit(member);
+                var memberNode = this.Context.Pop();
+                memberArray.Add(memberNode);
+            }
+
+            this.Context.Push(this.ConvertFromArray(memberArray));
+            return exp;
+        }
+
+        private QNode ConvertFromArray(List<QNode> memberArray)
+        {
+            QNode first = null;
+            QNode current = null;
+            foreach (var member in memberArray)
+            {
+                if (first == null)
+                {
+                    first = member;
+                    current = member;
+                }
+                else
+                {
+                    current.Right = member;
+                    current = member;
+                }
+            }
+            return first;
+        }
         /// <summary>
         ///     The visit new.
         /// </summary>

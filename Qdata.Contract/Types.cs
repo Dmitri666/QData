@@ -18,7 +18,8 @@
         Count = 3,
         OrderBy = 4,
         OrderByDescending = 5,
-        ToString = 6
+        ToString = 6,
+        QueryString = 7
 
     }
 

@@ -41,13 +41,16 @@
   <ItemGroup>
     <Compile Include="Builder\IQNodeVisitor.cs" />
     <Compile Include="Builder\Methods.cs" />
-    <Compile Include="Builder\QDescriptorConverter.cs" />
+    <Compile Include="Builder\QNodeConverter.cs" />
     <Compile Include="Builder\QNodeExtentions.cs" />
     <Compile Include="Converters\ArrayConverter.cs" />
     <Compile Include="Converters\IntegerConverter.cs" />
     <Compile Include="Converters\DefaultConverter.cs" />
-    <Compile Include="ExpressionProvider.cs" />
+    <Compile Include="PreProcessor\EnumerableQueryProviderPreprocessor.cs" />
+    <Compile Include="QNodeDeserializer.cs" />
     <Compile Include="LinqRuntimeClassBuilder.cs" />
+    <Compile Include="PreProcessor\DbQueryProviderPreprocessor.cs" />
+    <Compile Include="PreProcessor\ElasticProviderPreprocessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

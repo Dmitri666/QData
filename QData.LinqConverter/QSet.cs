@@ -5,6 +5,8 @@ using Qdata.Contract;
 
 namespace QData.LinqConverter
 {
+    using System;
+
     public class QSet<T> : EnumerableQuery<T>, IQSet
 
     {
@@ -23,11 +25,11 @@ namespace QData.LinqConverter
         {
         }
 
-        public QDescriptor ConvertToQDescriptor(IQueryable query)
+        public QNode Serialize(IQueryable query)
         {
-            var con = new ExpressionConverter();
-            var root = con.Convert(query.Expression);
-            return new QDescriptor {Root = root};
+            return new ExpressionSerializer().Serialize(query.Expression);
         }
+
+        
     }
 }
