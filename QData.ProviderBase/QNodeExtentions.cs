@@ -1,4 +1,4 @@
-﻿namespace QData.ExpressionProvider.Builder
+﻿namespace QData.ProviderBase
 {
     using Qdata.Contract;
 

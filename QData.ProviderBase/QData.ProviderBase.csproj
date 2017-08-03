@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{70E07DC3-22D6-400B-B5A1-C3BEABF406D8}</ProjectGuid>
+    <ProjectGuid>{DC6BD5CD-F5F4-4BD6-AEEB-CF8E83881563}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QData.ExpressionProvider</RootNamespace>
-    <AssemblyName>QData.ExpressionProvider</AssemblyName>
+    <RootNamespace>QData.ProviderBase</RootNamespace>
+    <AssemblyName>QData.ProviderBase</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,38 +30,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Builder\IQNodeVisitor.cs" />
-    <Compile Include="Builder\Methods.cs" />
-    <Compile Include="Builder\ProviderEnum.cs" />
-    <Compile Include="Builder\QNodeConverter.cs" />
-    <Compile Include="Builder\QNodeExtentions.cs" />
-    <Compile Include="Converters\ArrayConverter.cs" />
-    <Compile Include="Converters\ToLowerConverter.cs" />
-    <Compile Include="Converters\IntegerConverter.cs" />
-    <Compile Include="Converters\DefaultConverter.cs" />
-    <Compile Include="PreProcessor\MemberNodeExpander.cs" />
-    <Compile Include="PreProcessor\PreConverter.cs" />
-    <Compile Include="PreProcessor\QueryStringPreConverter.cs" />
-    <Compile Include="QNodeConverter.cs" />
-    <Compile Include="LinqRuntimeClassBuilder.cs" />
+    <Compile Include="IQNodeVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QNodeExtentions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Qdata.Contract\Qdata.Contract.csproj">
       <Project>{91c56cf0-5343-4e8c-8c6d-fafbaf2bedaa}</Project>
       <Name>Qdata.Contract</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

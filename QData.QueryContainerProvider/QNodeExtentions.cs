@@ -1,4 +1,4 @@
-﻿namespace QData.ExpressionProvider.Builder
+﻿namespace QData.QueryContainerProvider
 {
     using Qdata.Contract;
 
@@ -8,7 +8,10 @@
         {
             if (node.Type == NodeType.Binary)
             {
+               
                 AcceptBinary(node, visitor);
+            
+                
             }
 
             if (node.Type == NodeType.Member)
@@ -48,19 +51,14 @@
         private static void AcceptBinary(QNode node, IQNodeVisitor visitor)
         {
             node.Left.Accept(visitor);
-            if (node.Right.Type == NodeType.Constant)
-            {
-                visitor.SetConstantConverter(node);
-            }
-
-
             node.Right.Accept(visitor);
             visitor.VisitBinary(node);
         }
 
+        
+
         private static void AcceptMember(QNode node, IQNodeVisitor visitor)
         {
-            node.Left?.Accept(visitor);
             visitor.VisitMember(node);
         }
 

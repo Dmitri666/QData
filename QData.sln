@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.ExpressionProvider", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.Querable.Extentions", "QData.Querable.Extentions\QData.Querable.Extentions.csproj", "{6EF17A95-8160-4C31-9882-DF71F025CEE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.QueryContainerProvider", "QData.QueryContainerProvider\QData.QueryContainerProvider.csproj", "{D370370B-686F-411E-A6CE-843748C8D3C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QData.QueryContainerProvider.Test", "QData.QueryContainerProvider.Test\QData.QueryContainerProvider.Test.csproj", "{4FF5221B-559B-4C03-8159-0EFF878A6CD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EF17A95-8160-4C31-9882-DF71F025CEE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D370370B-686F-411E-A6CE-843748C8D3C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D370370B-686F-411E-A6CE-843748C8D3C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D370370B-686F-411E-A6CE-843748C8D3C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D370370B-686F-411E-A6CE-843748C8D3C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FF5221B-559B-4C03-8159-0EFF878A6CD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FF5221B-559B-4C03-8159-0EFF878A6CD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FF5221B-559B-4C03-8159-0EFF878A6CD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FF5221B-559B-4C03-8159-0EFF878A6CD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

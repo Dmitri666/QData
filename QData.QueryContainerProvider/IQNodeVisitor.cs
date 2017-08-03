@@ -1,4 +1,4 @@
-﻿namespace QData.ExpressionProvider.Builder
+﻿namespace QData.QueryContainerProvider
 {
     using Qdata.Contract;
 

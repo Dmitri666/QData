@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QData.ExpressionProvider.PreProcessor
+namespace QData.ExpressionProvider.Builder
 {
-    public class ElasticProviderPreprocessor
+    public enum ProviderEnum
     {
+        DbQueryProvider,
+        EnumerableQueryProvider
     }
 }

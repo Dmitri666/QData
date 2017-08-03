@@ -1,9 +1,10 @@
-﻿using System;
-using System.Linq.Expressions;
-using Qdata.Contract;
-
-namespace QData.ExpressionProvider.Converters
+﻿namespace QData.ExpressionProvider.Converters
 {
+    using System;
+    using System.Linq.Expressions;
+
+    using Qdata.Contract;
+
     public class DefaultConverter
     {
         public DefaultConverter(Type target)
