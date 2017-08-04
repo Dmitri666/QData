@@ -20,12 +20,12 @@ namespace QData.QueryContainerProvider
             this.client = client;
         }
 
-        public QueryContainer Convert<T>(QNode descriptor) where T : class
+        public IReadOnlyCollection<T> Convert<T>(QNode descriptor) where T : class
         {
             var converter = new QNodeConverter<T>();
             descriptor.Accept(converter);
             var result = this.client.Search<T>(s => s.Sort(converter.Sorting).Query(converter.Query));
-            return null;
+            return result.Documents;
         }
     }
 }

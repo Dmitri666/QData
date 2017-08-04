@@ -18,18 +18,15 @@ namespace QData.QueryContainerProvider.Test
         public void TestMethod1()
         {
             var connectionSettings =
-                new ConnectionSettings().InferMappingFor<TestDto>(i => i.IndexName("my-projects").TypeName("project"))
-                    .EnableDebugMode()
-                    .PrettyJson()
-                    .RequestTimeout(TimeSpan.FromMinutes(2));
-
+                new ConnectionSettings(new Uri("http://rnd-es-1a:9200")).DefaultIndex("wbv_harburg_shell_wasserwerksearchindex");
+            connectionSettings.DisableDirectStreaming();
             var client = new ElasticClient(connectionSettings);
             
-            var set = new QSet<TestDto>();
-            var query = set.OrderBy(x => x.Vorname).OrderByDescending(x => x.Nachname);
+            var set = new QSet<WasserwerkSearchIndex>();
+            var query = set.Where(x => x.Bezeichnung.Contains("a"));
             var node = set.Serialize(query);
             var d = new QueryContainerBuilder(client);
-            var result = d.Convert<TestDto>(node);
+            var result = d.Convert<WasserwerkSearchIndex>(node);
 
 
         }

@@ -46,6 +46,11 @@
         {
             get
             {
+                if (this.ContextQuery.Count == 0)
+                {
+                    return x => x;
+                }
+
                 return descriptor => this.QueryContainer;
 
             }
@@ -62,15 +67,17 @@
 
         public void VisitBinary(QNode node)
         {
-            var left = this.ContextQuery.Pop();
-            var right = this.ContextQuery.Pop();
             var binary = EnumResolver.ResolveBinary(node.Value);
             if (binary == BinaryType.And)
             {
+                var left = this.ContextQuery.Pop();
+                var right = this.ContextQuery.Pop();
                 this.ContextQuery.Push(left && right);
             }
             else if (binary == BinaryType.Or)
             {
+                var left = this.ContextQuery.Pop();
+                var right = this.ContextQuery.Pop();
                 this.ContextQuery.Push(left || right);
             }
             else if (binary == BinaryType.Contains)
@@ -86,7 +93,7 @@
 
         public void VisitMember(QNode node)
         {
-            this.ContextField.Push(new Field(Convert.ToString(node.Value)));
+            this.ContextField.Push(new Field(ToCamelCase(Convert.ToString(node.Value))));
         }
 
         public void VisitQuerable(QNode node)
@@ -96,12 +103,13 @@
 
         public void VisitMethod(QNode node)
         {
-            var member = this.ContextField.Pop();
+            
             var method = EnumResolver.ResolveMethod(node.Value);
             switch (method)
             {
                 case MethodType.OrderBy:
                 case MethodType.OrderByDescending:
+                    var member = this.ContextField.Pop();
                     this.SortingRequest.Add(new KeyValuePair<Field, MethodType>(member, method));
                     break;
                 case MethodType.Where:
@@ -141,6 +149,11 @@
         public void SetConstantConverter(QNode node)
         {
             throw new NotImplementedException();
+        }
+
+        private static string ToCamelCase(string fieldName)
+        {
+            return $"{fieldName.Substring(0, 1).ToLower()}{fieldName.Substring(1)}";
         }
     }
 }
