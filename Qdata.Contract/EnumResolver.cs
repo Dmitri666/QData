@@ -4,36 +4,62 @@ namespace Qdata.Contract
 {
     public class EnumResolver 
     {
-        public static MethodType ResolveMethod(object value)
+        public static NodeType ResolveNodeType(object value)
         {
-            MethodType method;
+            NodeType nodeType;
             if (value is long)
             {
-                method = (MethodType)Convert.ToInt16(value);
+                nodeType = (NodeType)Convert.ToInt16(value);
             }
             else
             {
-                Enum.TryParse(Convert.ToString(value), out method);
+                Enum.TryParse(Convert.ToString(value), out nodeType);
             }
 
-            return method;
+            return nodeType;
         }
 
-        public static BinaryType ResolveBinary(object value)
+        public static NodeGroup ResolveNodeGroup(NodeType nodeType)
         {
-            BinaryType op;
-            if (value is long)
+            switch (nodeType)
             {
-                op = (BinaryType)Convert.ToInt16(value);
-            }
-            else
-            {
-                Enum.TryParse(Convert.ToString(value), out op);
-            }
+                case NodeType.And:
+                case NodeType.Or:
+                case NodeType.Equal:
+                case NodeType.GreaterThan:
+                case NodeType.GreaterThanOrEqual:
+                case NodeType.LessThan:
+                case NodeType.LessThanOrEqual:
+                case NodeType.NotEqual:
+                    return NodeGroup.Binary;
+                case NodeType.Where:
+                case NodeType.Select:
+                case NodeType.Any:
+                case NodeType.Count:
+                case NodeType.OrderBy:
+                case NodeType.OrderByDescending:
+                case NodeType.ToString:
+                case NodeType.QueryString:
+                case NodeType.Contains:
+                case NodeType.In:
+                case NodeType.NotIn:
+                case NodeType.StartsWith:
+                case NodeType.EndsWith:
+                case NodeType.Take:
+                case NodeType.Skip:
+                    return NodeGroup.Method;
+                case NodeType.Constant:
+                    return NodeGroup.Constant;
+                case NodeType.Querable:
+                    return NodeGroup.Querable;
+                case NodeType.Member:
+                    return NodeGroup.Member;
+                default:
+                    throw new NotImplementedException(nodeType.ToString());
 
-            return op;
+            }
         }
 
-        
+
     }
 }

@@ -36,12 +36,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstantPlaceHolder.cs" />
+    <Compile Include="DynamicFilter.cs" />
+    <Compile Include="DynamicSource.cs" />
     <Compile Include="ExpressionSerializer.cs" />
     <Compile Include="Extentions\QuerableExtentions.cs" />
     <Compile Include="IConstantPlaceHolder.cs" />
-    <Compile Include="IQSet.cs" />
+    <Compile Include="IEnumerableSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QSet.cs" />
+    <Compile Include="EnumerableSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Qdata.Contract\Qdata.Contract.csproj">

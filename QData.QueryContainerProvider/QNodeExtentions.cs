@@ -6,33 +6,31 @@
     {
         public static void Accept(this QNode node, IQNodeVisitor visitor)
         {
-            if (node.Type == NodeType.Binary)
+            var group = EnumResolver.ResolveNodeGroup(node.Type);
+            if (group == NodeGroup.Binary)
             {
-               
                 AcceptBinary(node, visitor);
-            
-                
             }
 
-            if (node.Type == NodeType.Member)
+            if (group == NodeGroup.Member)
             {
                 AcceptMember(node, visitor);
             }
 
-            if (node.Type == NodeType.Querable)
+            if (group == NodeGroup.Querable)
             {
                 AcceptQuerable(node, visitor);
             }
 
-            if (node.Type == NodeType.Method)
+            if (group == NodeGroup.Method)
             {
-                var method = EnumResolver.ResolveMethod(node.Value);
+                var method = EnumResolver.ResolveNodeType(node.Type);
 
-                if (method == MethodType.Select)
+                if (method == NodeType.Select)
                 {
                     AcceptProjection(node, visitor);
                 }
-                else if (node.Right == null)
+                else if (node.Argument == null)
                 {
                     AcceptEmptyMethod(node, visitor);
                 }
@@ -42,7 +40,7 @@
                 }
             }
 
-            if (node.Type == NodeType.Constant)
+            if (group == NodeGroup.Constant)
             {
                 AcceptConstant(node, visitor);
             }
@@ -50,8 +48,8 @@
 
         private static void AcceptBinary(QNode node, IQNodeVisitor visitor)
         {
-            node.Left.Accept(visitor);
-            node.Right.Accept(visitor);
+            node.Caller.Accept(visitor);
+            node.Argument.Accept(visitor);
             visitor.VisitBinary(node);
         }
 
@@ -64,31 +62,28 @@
 
         private static void AcceptQuerable(QNode node, IQNodeVisitor visitor)
         {
-            visitor.VisitQuerable(node);
+            
         }
 
         public static void AcceptMethod(QNode node, IQNodeVisitor visitor)
         {
-            node.Left.Accept(visitor);
-            visitor.EnterContext(node);
-            node.Right.Accept(visitor);
+            node.Caller.Accept(visitor);
+            node.Argument.Accept(visitor);
             visitor.VisitMethod(node);
-            visitor.LeaveContext(node);
+            
         }
 
         public static void AcceptEmptyMethod(QNode node, IQNodeVisitor visitor)
         {
-            node.Left.Accept(visitor);
+            node.Caller.Accept(visitor);
             visitor.VisitEmptyMethod(node);
         }
 
         public static void AcceptProjection(QNode node, IQNodeVisitor visitor)
         {
-            node.Left.Accept(visitor);
-            visitor.EnterContext(node);
+            node.Caller.Accept(visitor);
             visitor.VisitProjection(node);
-            visitor.LeaveContext(node);
-        }
+            }
 
         private static void AcceptConstant(QNode node, IQNodeVisitor visitor)
         {

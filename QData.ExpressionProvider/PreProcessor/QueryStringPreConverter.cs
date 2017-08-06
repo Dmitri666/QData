@@ -26,21 +26,21 @@
                 return whereNode;
             }
 
-            this.QueryStringParentNode.Left = whereNode;
+            this.QueryStringParentNode.Caller = whereNode;
             return root;
         }
 
         private QNode ConvertQueryStringToWhere(QNode queryString)
         {
-            QNode where = new QNode() { Type = NodeType.Method, Value = MethodType.Where, Left = queryString.Left };
-            var constant = new QNode() { Type = NodeType.Constant, Value = queryString.Right.Value };
+            QNode where = new QNode() { Type = NodeType.Where, Caller = queryString.Caller };
+            var constant = new QNode() { Type = NodeType.Constant, Value = queryString.Argument.Value };
             var members = new List<QNode>();
-            QNode temp = queryString.Right.Right;
+            QNode temp = queryString.Argument.Argument;
             while (temp != null)
             {
                 members.Add(temp);
-                var temp1 = temp.Right;
-                temp.Right = null;
+                var temp1 = temp.Argument;
+                temp.Argument = null;
                 temp = temp1;
             }
 
@@ -49,10 +49,9 @@
             {
                 var containNode = new QNode()
                                       {
-                                          Type = NodeType.Binary,
-                                          Value = BinaryType.Contains,
-                                          Right = constant,
-                                          Left = members[i]
+                                          Type = NodeType.Contains,
+                                          Argument = constant,
+                                          Caller = members[i]
                                       };
                 if (i == 0)
                 {
@@ -62,39 +61,39 @@
                 {
                     var orNode = new QNode()
                                      {
-                                         Type = NodeType.Binary,
-                                         Value = BinaryType.Or,
-                                         Left = predicate,
-                                         Right = containNode
+                                         Type = NodeType.Or,
+                                         Caller = predicate,
+                                         Argument = containNode
                                      };
                     predicate = orNode;
                 }
             }
 
-            where.Right = predicate;
+            where.Argument = predicate;
 
             return where;
         }
 
         private void Visit(QNode node)
         {
-            if (node.Type == NodeType.Method)
+            var nodeType = EnumResolver.ResolveNodeType(node.Type);
+            var group = EnumResolver.ResolveNodeGroup(nodeType);
+            if (group == NodeGroup.Method)
             {
-                var method = EnumResolver.ResolveMethod(node.Value);
-                if (method == MethodType.QueryString)
+                if (nodeType == NodeType.QueryString)
                 {
                     this.QueryStringNode = node;
                     this.QueryStringParentNode = this.CurrentParentNode;
                 }
             }
             this.CurrentParentNode = node;
-            if (node.Left != null)
+            if (node.Caller != null)
             {
-                this.Visit(node.Left);
+                this.Visit(node.Caller);
             }
-            if (node.Right != null)
+            if (node.Argument != null)
             {
-                this.Visit(node.Right);
+                this.Visit(node.Argument);
             }
         }
     }

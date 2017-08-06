@@ -1,6 +1,6 @@
 ﻿namespace Qdata.Contract
 {
-    public enum NodeType
+    public enum NodeGroup
     {
         Querable = 0,
         Member = 1,
@@ -10,7 +10,7 @@
 
     }
 
-    public enum MethodType
+    public enum NodeType
     {
         Where = 0,
         Select = 1,
@@ -19,27 +19,27 @@
         OrderBy = 4,
         OrderByDescending = 5,
         ToString = 6,
-        QueryString = 7
+        QueryString = 7,
+        Contains = 8,
+        In = 9,
+        NotIn = 10,
+        StartsWith = 11,
+        EndsWith = 12,
+        Take = 13,
+        Skip = 14,
+        And = 15,
+        Or = 16,
+        Equal = 17,
+        GreaterThan = 18,
+        GreaterThanOrEqual = 19,
+        LessThan = 20,
+        LessThanOrEqual = 21,
+        NotEqual = 22,
+        Querable = 23,
+        Member = 24,
+        Constant = 25
 
     }
 
-    public enum BinaryType
-    {
-        And = 0,
-        Or = 1,
-        Equal = 2,
-        GreaterThan = 3,
-        GreaterThanOrEqual = 4,
-        LessThan = 5,
-        LessThanOrEqual = 6,
-        Contains = 7,
-        StartsWith = 8,
-        EndsWith = 9,
-        In = 10,
-        Take = 11,
-        Skip = 12,
-        NotEqual = 13,
-        NotIn = 14
-
-    }
+    
 }

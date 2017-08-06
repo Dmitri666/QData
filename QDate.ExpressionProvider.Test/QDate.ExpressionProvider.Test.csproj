@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4FF5221B-559B-4C03-8159-0EFF878A6CD8}</ProjectGuid>
+    <ProjectGuid>{E3F7A5D0-C1FA-4E1B-8D6C-53F09292AA5C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QData.QueryContainerProvider.Test</RootNamespace>
-    <AssemblyName>QData.QueryContainerProvider.Test</AssemblyName>
+    <RootNamespace>QDate.ExpressionProvider.Test</RootNamespace>
+    <AssemblyName>QDate.ExpressionProvider.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -35,18 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elasticsearch.Net.5.5.0\lib\net46\Elasticsearch.Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Nest, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\NEST.5.5.0\lib\net46\Nest.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -62,7 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TestIndex.cs" />
+    <Compile Include="PersonDto.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,17 +59,18 @@
       <Project>{91c56cf0-5343-4e8c-8c6d-fafbaf2bedaa}</Project>
       <Name>Qdata.Contract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QData.ExpressionProvider\QData.ExpressionProvider.csproj">
+      <Project>{70e07dc3-22d6-400b-b5a1-c3beabf406d8}</Project>
+      <Name>QData.ExpressionProvider</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QData.LinqConverter\QData.LinqConverter.csproj">
       <Project>{2a69873b-a671-4da6-bb14-f9839e07e386}</Project>
       <Name>QData.LinqConverter</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QData.QueryContainerProvider\QData.QueryContainerProvider.csproj">
-      <Project>{d370370b-686f-411e-a6ce-843748c8d3c5}</Project>
-      <Name>QData.QueryContainerProvider</Name>
+    <ProjectReference Include="..\QData.Querable.Extentions\QData.Querable.Extentions.csproj">
+      <Project>{6ef17a95-8160-4c31-9882-df71f025cee7}</Project>
+      <Name>QData.Querable.Extentions</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

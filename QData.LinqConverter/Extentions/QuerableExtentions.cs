@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Qdata.Contract;
 
 namespace QData.LinqConverter.Extentions
 {
@@ -16,6 +17,11 @@ namespace QData.LinqConverter.Extentions
         {
             
             return CreateQueryMethodCall(source, queryStringWithFieldsMethodInfo, Expression.Constant(query), fields);
+        }
+
+        public static QNode Serialize(this IQueryable query)
+        {
+            return new ExpressionSerializer().Serialize(query.Expression);
         }
 
         static IQueryable<TSource> CreateQueryMethodCall<TSource>(IQueryable<TSource> source, MethodInfo method, params Expression[] arguments)

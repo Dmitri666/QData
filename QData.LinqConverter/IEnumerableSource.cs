@@ -1,6 +1,6 @@
 ﻿namespace QData.LinqConverter
 {
-    public interface IQSet
+    public interface IEnumerableSource
     {
     }
 }

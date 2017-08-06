@@ -9,9 +9,9 @@ namespace Qdata.Contract
 
         public NodeType Type { get; set; }
 
-        public QNode Left { get; set; }
+        public QNode Caller { get; set; }
 
-        public QNode Right { get; set; }
+        public QNode Argument { get; set; }
 
         public object Value { get; set; }
     }

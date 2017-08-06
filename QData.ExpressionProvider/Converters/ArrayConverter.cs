@@ -19,6 +19,10 @@ namespace QData.ExpressionProvider.Converters
             if (valueType.IsGenericType)
             {
                 var list = (List<string>) node.Value;
+                if (target == typeof (string))
+                {
+                    return Expression.Constant(list);
+                }
                 if (target == typeof (long))
                 {
                     var converted = new List<long>();

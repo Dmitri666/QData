@@ -25,18 +25,18 @@ namespace QData.ExpressionProvider.PreProcessor
                 var members = member.Split('.');
                 if (members.Length > 1)
                 {
-                    var currentLeft = node.Left;
+                    var currentLeft = node.Caller;
                     node.Value = members[members.Length - 1];
                     
                     var currentParentNode = node;
                     for (int i = members.Length - 2; i >= 0; i--)
                     {
                         var newNode = new QNode() { Type = NodeType.Member ,Value = members[i] };
-                        currentParentNode.Left = newNode;
+                        currentParentNode.Caller = newNode;
                         currentParentNode = newNode;
                         if (i == 0)
                         {
-                            newNode.Left = currentLeft;
+                            newNode.Caller = currentLeft;
                         }
                     }
 
@@ -45,13 +45,13 @@ namespace QData.ExpressionProvider.PreProcessor
 
             this.CurrentParent = node;
 
-            if (node.Left != null)
+            if (node.Caller != null)
             {
-                this.Visit(node.Left);
+                this.Visit(node.Caller);
             }
-            if (node.Right != null)
+            if (node.Argument != null)
             {
-                this.Visit(node.Right);
+                this.Visit(node.Argument);
             }
         }
     }

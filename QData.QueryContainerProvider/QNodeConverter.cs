@@ -21,7 +21,7 @@
 
         private Stack<object> ContextValue { get; set; }
 
-        private List<KeyValuePair<Field, MethodType>> SortingRequest { get; set; }
+        private List<KeyValuePair<Field, NodeType>> SortingRequest { get; set; }
             
 
         private QueryContainer QueryContainer => this.ContextQuery.Pop();
@@ -34,7 +34,7 @@
                     {
                         foreach (var sorting in this.SortingRequest)
                         {
-                            descriptor = sorting.Value == MethodType.OrderBy ? descriptor.Ascending(sorting.Key) : descriptor.Descending(sorting.Key);
+                            descriptor = sorting.Value == NodeType.OrderBy ? descriptor.Ascending(sorting.Key) : descriptor.Descending(sorting.Key);
                         }
                         return descriptor;
                     };
@@ -51,7 +51,10 @@
                     return x => x;
                 }
 
-                return descriptor => this.QueryContainer;
+                return descriptor =>
+                {
+                    return this.QueryContainer;
+                };
 
             }
 
@@ -62,29 +65,87 @@
             this.ContextQuery = new Stack<QueryBase>();
             this.ContextField = new Stack<Field>();
             this.ContextValue = new Stack<object>();
-            this.SortingRequest = new List<KeyValuePair<Field, MethodType>>();
+            this.SortingRequest = new List<KeyValuePair<Field, NodeType>>();
         }
 
         public void VisitBinary(QNode node)
         {
-            var binary = EnumResolver.ResolveBinary(node.Value);
-            if (binary == BinaryType.And)
+            var binary = EnumResolver.ResolveNodeType(node.Type);
+            switch (binary)
             {
-                var left = this.ContextQuery.Pop();
-                var right = this.ContextQuery.Pop();
-                this.ContextQuery.Push(left && right);
+                case NodeType.And:
+                {
+                    var left = this.ContextQuery.Pop();
+                    var right = this.ContextQuery.Pop();
+                    this.ContextQuery.Push(left && right);
+                }
+                    break;
+                case NodeType.Or:
+                {
+                    var left = this.ContextQuery.Pop();
+                    var right = this.ContextQuery.Pop();
+                    this.ContextQuery.Push(left || right);
+                }
+                    break;
+                case NodeType.Equal:
+                    {
+                        var field = this.ContextField.Pop();
+                        var value = this.ContextValue.Pop();
+                        var query = new MatchQuery() {Field = field ,Query = value.ToString() };
+                        this.ContextQuery.Push(query);
+                        
+                    }
+                    break;
+                case NodeType.NotEqual:
+                    {
+                        var field = this.ContextField.Pop();
+                        var value = this.ContextValue.Pop();
+                        var query = new MatchQuery() { Field = field, Query = value.ToString() };
+                        this.ContextQuery.Push(!query);
+
+                    }
+                    break;
+                case NodeType.GreaterThan:
+                    {
+                        var field = this.ContextField.Pop();
+                        var value = this.ContextValue.Pop();
+                        var query = new TermRangeQuery(){ Field = field, GreaterThan = value.ToString() };
+                        this.ContextQuery.Push(query);
+                        
+                    }
+                    break;
+                case NodeType.GreaterThanOrEqual:
+                    {
+                        var field = this.ContextField.Pop();
+                        var value = this.ContextValue.Pop();
+                        var query = new TermRangeQuery() { Field = field, GreaterThanOrEqualTo = value.ToString() };
+                        this.ContextQuery.Push(query);
+
+                    }
+                    break;
+                case NodeType.LessThan:
+                    {
+                        var field = this.ContextField.Pop();
+                        var value = this.ContextValue.Pop();
+                        var query = new TermRangeQuery() { Field = field, LessThan = value.ToString() };
+                        this.ContextQuery.Push(query);
+
+                    }
+                    break;
+                case NodeType.LessThanOrEqual:
+                    {
+                        var field = this.ContextField.Pop();
+                        var value = this.ContextValue.Pop();
+                        var query = new TermRangeQuery() { Field = field, LessThanOrEqualTo = value.ToString() };
+                        this.ContextQuery.Push(query);
+
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException(binary.ToString());
             }
-            else if (binary == BinaryType.Or)
-            {
-                var left = this.ContextQuery.Pop();
-                var right = this.ContextQuery.Pop();
-                this.ContextQuery.Push(left || right);
-            }
-            else if (binary == BinaryType.Contains)
-            {
-                var term = new TermQuery() {Field = this.ContextField.Pop() , Value = this.ContextValue.Pop()} ;
-                this.ContextQuery.Push(term);
-            }
+
+
 
 
 
@@ -96,39 +157,58 @@
             this.ContextField.Push(new Field(ToCamelCase(Convert.ToString(node.Value))));
         }
 
-        public void VisitQuerable(QNode node)
-        {
-            
-        }
-
         public void VisitMethod(QNode node)
         {
-            
-            var method = EnumResolver.ResolveMethod(node.Value);
+
+            var method = EnumResolver.ResolveNodeType(node.Type);
             switch (method)
             {
-                case MethodType.OrderBy:
-                case MethodType.OrderByDescending:
+                case NodeType.OrderBy:
+                case NodeType.OrderByDescending:
                     var member = this.ContextField.Pop();
-                    this.SortingRequest.Add(new KeyValuePair<Field, MethodType>(member, method));
+                    this.SortingRequest.Add(new KeyValuePair<Field, NodeType>(member, method));
                     break;
-                case MethodType.Where:
+                case NodeType.Where:
+                    break;
+                case NodeType.Contains:
+                {
+                    var value = string.Format("*{0}*", this.ContextValue.Pop());
+                    var term = new WildcardQuery() {Field = this.ContextField.Pop(), Value = value};
+                    this.ContextQuery.Push(term);
+                }
+                    break;
+                case NodeType.StartsWith:
+                {
+                    var term = new PrefixQuery() {Field = this.ContextField.Pop(), Value = this.ContextValue.Pop() };
+                    this.ContextQuery.Push(term);
+                }
+                    break;
+                case NodeType.EndsWith:
+                    {
+                        var value = string.Format("*{0}", this.ContextValue.Pop());
+                        var term = new WildcardQuery() { Field = this.ContextField.Pop(), Value = value };
+                        this.ContextQuery.Push(term);
+                    }
+                    break;
+                case NodeType.In:
+                {
+                    var value = this.ContextValue.Pop() as List<string>;
+                    var terms = new TermsQuery() { Field = this.ContextField.Pop() ,Terms = value};
+                    this.ContextQuery.Push(terms);
+                }
+                    break;
+                case NodeType.NotIn:
+                    {
+                        var value = this.ContextValue.Pop() as List<string>;
+                        var terms = !new TermsQuery() { Field = this.ContextField.Pop(), Terms = value };
+                        this.ContextQuery.Push(terms);
+                    }
                     break;
                 default:
-                    break;
+                    throw new NotImplementedException(method.ToString());
             }
 
 
-        }
-
-        public void EnterContext(QNode node)
-        {
-            
-        }
-
-        public void LeaveContext(QNode node)
-        {
-            
         }
 
         public void VisitConstant(QNode node)

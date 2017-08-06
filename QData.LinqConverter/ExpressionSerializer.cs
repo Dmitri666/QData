@@ -154,16 +154,16 @@ namespace QData.LinqConverter
         /// </returns>
         protected override Expression VisitBinary(BinaryExpression expression)
         {
-            BinaryType op;
-            if (!BinaryType.TryParse(expression.NodeType.ToString(), out op))
+            NodeType op;
+            if (!NodeType.TryParse(expression.NodeType.ToString(), out op))
             {
                 if (expression.NodeType == ExpressionType.OrElse)
                 {
-                    op = BinaryType.Or;
+                    op = NodeType.Or;
                 }
                 else if (expression.NodeType == ExpressionType.AndAlso)
                 {
-                    op = BinaryType.And;
+                    op = NodeType.And;
                 }
                 else
                 {
@@ -171,11 +171,11 @@ namespace QData.LinqConverter
                 }
             }
 
-            var node = new QNode() { Type = NodeType.Binary, Value = op };
+            var node = new QNode() { Type = op };
             this.Visit(expression.Left);
-            node.Left = this.Context.Pop();
+            node.Caller = this.Context.Pop();
             this.Visit(expression.Right);
-            node.Right = this.Context.Pop();
+            node.Argument = this.Context.Pop();
 
             this.Context.Push(node);
 
@@ -193,7 +193,7 @@ namespace QData.LinqConverter
         /// </returns>
         protected override Expression VisitConstant(ConstantExpression expr)
         {
-            if (typeof(IQSet).IsAssignableFrom(expr.Type))
+            if (typeof(IEnumerableSource).IsAssignableFrom(expr.Type))
             {
                 var node = new QNode() { Type = NodeType.Querable, Value = expr.Type.GenericTypeArguments[0].Name };
                 this.Context.Push(node);
@@ -257,7 +257,7 @@ namespace QData.LinqConverter
                 if (memberAccess.Expression.NodeType == ExpressionType.MemberAccess)
                 {
                     this.Visit(memberAccess.Expression);
-                    node.Left = this.Context.Pop();
+                    node.Caller = this.Context.Pop();
                     this.Context.Push(node);
                 }
                 else
@@ -293,7 +293,7 @@ namespace QData.LinqConverter
                 {
                     Type = NodeType.Member,
                     Value = binding.Member.Name,
-                    Right = bindingNode
+                    Argument = bindingNode
                 };
                 if (lambdaNode == null)
                 {
@@ -301,7 +301,7 @@ namespace QData.LinqConverter
                 }
                 else
                 {
-                    lambdaNode.Left = node;
+                    lambdaNode.Caller = node;
                 }
             }
 
@@ -321,15 +321,10 @@ namespace QData.LinqConverter
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
             QNode node;
-            MethodType method;
-            BinaryType binary;
-            if(MethodType.TryParse(m.Method.Name,out method))
+            NodeType method;
+            if(NodeType.TryParse(m.Method.Name,out method))
             {
-                node = new QNode() { Type = NodeType.Method, Value = method };
-            }
-            else if(BinaryType.TryParse(m.Method.Name,out binary))
-            {
-                node = new QNode() { Type = NodeType.Binary, Value = binary };
+                node = new QNode() { Type = method };
             }
             else
             {
@@ -344,47 +339,47 @@ namespace QData.LinqConverter
                         ((MemberExpression)m.Arguments[0]).Expression.Type))
                     {
                         this.Visit(m.Object);
-                        node.Left = this.Context.Pop();
+                        node.Caller = this.Context.Pop();
                         this.Visit(m.Arguments[0]);
-                        node.Right = this.Context.Pop();
+                        node.Argument = this.Context.Pop();
                     }
-                    else if(node.Type == NodeType.Binary && EnumResolver.ResolveBinary(node.Value) == BinaryType.Contains)
+                    else if(EnumResolver.ResolveNodeType(node.Type) == NodeType.Contains)
                     {
-                        if (this.IsNot.Peek() == ExpressionType.Not)
+                        if (this.IsNot.Count > 0 && this.IsNot.Peek() == ExpressionType.Not)
                         {
-                            node.Value = BinaryType.NotIn;
+                            node.Type = NodeType.NotIn;
                             this.IsNot.Pop();
                         }
                         else
                         {
-                            node.Value = BinaryType.In;
+                            node.Type = NodeType.In;
                         }
                         
                         this.Visit(m.Arguments[0]);
-                        node.Left = this.Context.Pop();
+                        node.Caller = this.Context.Pop();
                         this.Visit(m.Object);
-                        node.Right = this.Context.Pop();
+                        node.Argument = this.Context.Pop();
                     }
                 }
                 else
                 {
                     this.Visit(m.Object);
-                    node.Left = this.Context.Pop();
+                    node.Caller = this.Context.Pop();
                     if (m.Arguments.Count > 0)
                     {
                         this.Visit(m.Arguments[0]);
-                        node.Right = this.Context.Pop();
+                        node.Argument = this.Context.Pop();
                     }
                 }
             }
             else
             {
                 this.Visit(m.Arguments[0]);
-                node.Left = this.Context.Pop();
+                node.Caller = this.Context.Pop();
                 if (m.Arguments.Count == 2)
                 {
                     this.Visit(m.Arguments[1]);
-                    node.Right = this.Context.Pop();
+                    node.Argument = this.Context.Pop();
                 }
                 // QueryString
                 else if (m.Arguments.Count == 3)
@@ -393,8 +388,8 @@ namespace QData.LinqConverter
                     var queryString = this.Context.Pop();
                     this.Visit(m.Arguments[2]);
                     var fields = this.Context.Pop();
-                    queryString.Right = fields;
-                    node.Right = queryString;
+                    queryString.Argument = fields;
+                    node.Argument = queryString;
                 }
             }
 
@@ -429,7 +424,7 @@ namespace QData.LinqConverter
                 }
                 else
                 {
-                    current.Right = member;
+                    current.Argument = member;
                     current = member;
                 }
             }
@@ -463,7 +458,7 @@ namespace QData.LinqConverter
                 {
                     Type = NodeType.Member,
                     Value = exp.Members[i].Name,
-                    Right = bindingNode
+                    Argument = bindingNode
                 };
                 if (lambdaNode == null)
                 {
@@ -471,7 +466,7 @@ namespace QData.LinqConverter
                 }
                 else
                 {
-                    lambdaNode.Left = node;
+                    lambdaNode.Caller = node;
                 }
             }
 
@@ -491,7 +486,7 @@ namespace QData.LinqConverter
             //    //}
             //    //else
             //    //{
-            //    //    bindingNode.Left = node;
+            //    //    bindingNode.Caller = node;
             //    //}
             //}
 
@@ -523,7 +518,7 @@ namespace QData.LinqConverter
         /// <returns>
         ///     The <see cref="Expression" />.
         /// </returns>
-        protected virtual Expression VisitUnary(UnaryExpression b)
+        protected override Expression VisitUnary(UnaryExpression b)
         {
             if (b.NodeType == ExpressionType.Not)
             {

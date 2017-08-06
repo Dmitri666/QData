@@ -1,4 +1,6 @@
-﻿namespace QData.ExpressionProvider.Builder
+﻿using System.CodeDom;
+
+namespace QData.ExpressionProvider.Builder
 {
     using System;
     using System.Collections.Generic;
@@ -11,7 +13,7 @@
 
     using QData.ExpressionProvider.Converters;
 
-    internal class QNodeConverter : IQNodeVisitor
+    internal class QNodeConverter 
     {
         /// <summary>
         ///     The count.
@@ -64,18 +66,18 @@
             this.ContextParameters.Pop();
         }
 
-        public void SetConstantConverter(QNode node)
+        public void SetMethodConstantConverter(QNode node)
         {
-            var left = this.ContextExpression.Peek();
-            var binaryType = EnumResolver.ResolveBinary(node.Value);
-            switch (binaryType)
+            var caller = this.ContextExpression.Peek();
+            var methodType = EnumResolver.ResolveNodeType(node.Type);
+            switch (methodType)
             {
-                case BinaryType.Contains:
-                    var containsMethod = left.Type.GetMethod("Contains", new[] { typeof(string) });
+                case NodeType.Contains:
+                    var containsMethod = caller.Type.GetMethod("Contains", new[] {typeof (string)});
                     if (containsMethod == null)
                     {
-                        var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
-                        var exp1 = Expression.Call(left, toStringMethod, null);
+                        var toStringMethod = typeof (object).GetMethod("ToString", new Type[] {});
+                        var exp1 = Expression.Call(caller, toStringMethod, null);
                         this.ContextExpression.Pop();
                         this.ContextExpression.Push(exp1);
 
@@ -90,75 +92,85 @@
                         {
                             this.ConstantConverter = new DefaultConverter(exp1.Type);
                         }
-                        
+
                     }
                     else
                     {
                         if (this.Provider == ProviderEnum.EnumerableQueryProvider)
                         {
-                            var exp1 = Expression.Call(left, Methods.ToLower, null);
+                            var exp1 = Expression.Call(caller, Methods.ToLower, null);
                             this.ContextExpression.Pop();
                             this.ContextExpression.Push(exp1);
-                            this.ConstantConverter = new ToLowerConverter(left.Type);
+                            this.ConstantConverter = new ToLowerConverter(caller.Type);
                         }
                         else
                         {
-                            this.ConstantConverter = new DefaultConverter(left.Type);
+                            this.ConstantConverter = new DefaultConverter(caller.Type);
                         }
-                    
-                    }
 
+                    }
                     break;
-                case BinaryType.StartsWith:
-                    var startsWithMethod = left.Type.GetMethod("StartsWith", new[] { typeof(string) });
+                case NodeType.StartsWith:
+                    var startsWithMethod = caller.Type.GetMethod("StartsWith", new[] { typeof(string) });
                     if (startsWithMethod == null)
                     {
                         var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
-                        var exp1 = Expression.Call(left, toStringMethod, null);
+                        var exp1 = Expression.Call(caller, toStringMethod, null);
                         this.ContextExpression.Pop();
                         this.ContextExpression.Push(exp1);
                         this.ConstantConverter = new DefaultConverter(exp1.Type);
                     }
                     else
                     {
-                        this.ConstantConverter = new DefaultConverter(left.Type);
+                        this.ConstantConverter = new DefaultConverter(caller.Type);
                     }
-
                     break;
-                case BinaryType.EndsWith:
-                    var endsWithMethod = left.Type.GetMethod("EndsWith", new[] { typeof(string) });
+                case NodeType.EndsWith:
+                    var endsWithMethod = caller.Type.GetMethod("EndsWith", new[] { typeof(string) });
                     if (endsWithMethod == null)
                     {
                         var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
-                        var exp1 = Expression.Call(left, toStringMethod, null);
+                        var exp1 = Expression.Call(caller, toStringMethod, null);
                         this.ContextExpression.Pop();
                         this.ContextExpression.Push(exp1);
                         this.ConstantConverter = new DefaultConverter(exp1.Type);
                     }
                     else
                     {
-                        this.ConstantConverter = new DefaultConverter(left.Type);
+                        this.ConstantConverter = new DefaultConverter(caller.Type);
                     }
 
                     break;
-                case BinaryType.In:
-                case BinaryType.NotIn:
-                    this.ConstantConverter = new ArrayConverter(left.Type);
+                case NodeType.In:
+                case NodeType.NotIn:
+                    this.ConstantConverter = new ArrayConverter(caller.Type);
                     break;
-                case BinaryType.Skip:
-                case BinaryType.Take:
-                    this.ConstantConverter = new IntegerConverter(left.Type);
+                case NodeType.Take:
+                case NodeType.Skip:
+                    this.ConstantConverter = new IntegerConverter(caller.Type);
                     break;
-                case BinaryType.And:
-                case BinaryType.Or:
+                default:
+                    throw new NotImplementedException(methodType.ToString());
+            }
+        }
+
+        public void SetBinaryConstantConverter(QNode node)
+        {
+            var caller = this.ContextExpression.Peek();
+            var binaryType = EnumResolver.ResolveNodeType(node.Type);
+            switch (binaryType)
+            {
+               
+                case NodeType.And:
+                case NodeType.Or:
                     break;
-                case BinaryType.Equal:
-                case BinaryType.GreaterThan:
-                case BinaryType.GreaterThanOrEqual:
-                case BinaryType.LessThan:
-                case BinaryType.LessThanOrEqual:
-                case BinaryType.NotEqual:
-                    this.ConstantConverter = new DefaultConverter(left.Type);
+                case NodeType.Equal:
+                case NodeType.GreaterThan:
+                case NodeType.GreaterThanOrEqual:
+                case NodeType.LessThan:
+                case NodeType.LessThanOrEqual:
+                case NodeType.NotEqual:
+                    this.ConstantConverter = new DefaultConverter(caller.Type);
                     break;
                 default:
                     throw new NotImplementedException(binaryType.ToString());
@@ -169,7 +181,7 @@
         {
             var right = this.ContextExpression.Pop();
             var left = this.ContextExpression.Pop();
-            var op = EnumResolver.ResolveBinary(node.Value);
+            var op = EnumResolver.ResolveNodeType(node.Type);
             var exp = this.BuildBinaryExpression(op, left, right);
             this.ContextExpression.Push(exp);
         }
@@ -183,8 +195,8 @@
         public void VisitEmptyMethod(QNode node)
         {
             var left = this.ContextExpression.Pop();
-            var method = EnumResolver.ResolveMethod(node.Value);
-            if (method == MethodType.ToString)
+            var method = EnumResolver.ResolveNodeType(node.Type);
+            if (method == NodeType.ToString)
             {
                 var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
                 var exp = Expression.Call(left, toStringMethod, null);
@@ -206,20 +218,90 @@
         public void VisitMember(QNode node)
         {
             this.ContextExpression.Push(
-                node.Left == null
+                node.Caller == null
                     ? Expression.PropertyOrField(this.ContextParameters.Peek(), Convert.ToString(node.Value))
                     : Expression.PropertyOrField(this.ContextExpression.Pop(), Convert.ToString(node.Value)));
         }
 
-        public void VisitMethod(QNode node)
+        public void VisitLambdaMethod(QNode node)
         {
             var right = this.ContextExpression.Pop();
             var left = this.ContextExpression.Pop();
 
+            var method = EnumResolver.ResolveNodeType(node.Type);
+
             var lambda = Expression.Lambda(right, this.ContextParameters.Peek());
 
-            var exp = this.BuildMethodCallExpression(EnumResolver.ResolveMethod(node.Value), left, lambda);
+            var exp = this.BuildMethodCallExpression(method, left, lambda);
             this.ContextExpression.Push(exp);
+        }
+
+        public void VisitMethod(QNode node)
+        {
+            Expression resultExpression;
+            var right = this.ContextExpression.Pop();
+            var left = this.ContextExpression.Pop();
+
+            var method = EnumResolver.ResolveNodeType(node.Type);
+            switch (method)
+            {
+                case NodeType.Contains:
+                    if (left.Type != typeof (string))
+                    {
+                        left = Expression.Call(left, "ToString", null);
+                    }
+
+                    resultExpression = Expression.Call(left, Methods.Contains, (ConstantExpression) right);
+                    break;
+                case NodeType.StartsWith:
+                    if (left.Type != typeof (string))
+                    {
+                        left = Expression.Call(left, "ToString", null);
+                    }
+
+                    resultExpression = Expression.Call(left, Methods.StartsWith, (ConstantExpression) right);
+                    break;
+                case NodeType.EndsWith:
+                    if (left.Type != typeof (string))
+                    {
+                        left = Expression.Call(left, "ToString", null);
+                    }
+
+                    resultExpression = Expression.Call(left, Methods.EndsWith, (ConstantExpression) right);
+                    break;
+                case NodeType.In:
+                    var containsMethod = right.Type.GetTypeInfo().GetMethod("Contains");
+                    resultExpression = Expression.Call(right, containsMethod, left);
+                    break;
+                case NodeType.NotIn:
+                    var containsMethod1 = right.Type.GetTypeInfo().GetMethod("Contains");
+                    var call = Expression.Call(right, containsMethod1, left);
+                    resultExpression = Expression.Not(call);
+                    break;
+                case NodeType.Take:
+                    var types = new List<Type>
+                    {
+                        left.Type.GetTypeInfo().IsGenericType
+                            ? left.Type.GenericTypeArguments[0]
+                            : left.Type
+                    };
+                    resultExpression = Expression.Call(typeof (Queryable), "Take", types.ToArray(), left, right);
+                    break;
+                case NodeType.Skip:
+                    var types1 = new List<Type>
+                    {
+                        left.Type.GetTypeInfo().IsGenericType
+                            ? left.Type.GenericTypeArguments[0]
+                            : left.Type
+                    };
+                    resultExpression = Expression.Call(typeof (Queryable), "Skip", types1.ToArray(), left, right);
+                    break;
+                default:
+                    throw new NotImplementedException(method.ToString());
+            }
+
+
+            this.ContextExpression.Push(resultExpression);
         }
 
         public void VisitProjection(QNode node)
@@ -227,18 +309,18 @@
             var left = this.ContextExpression.Pop();
 
             var bindingNodes = new Dictionary<string, QNode>();
-            var bindingPropertyNode = node.Right;
+            var bindingPropertyNode = node.Argument;
             while (bindingPropertyNode != null)
             {
-                bindingNodes.Add(Convert.ToString(bindingPropertyNode.Value), bindingPropertyNode.Right);
-                bindingPropertyNode = bindingPropertyNode.Left;
+                bindingNodes.Add(Convert.ToString(bindingPropertyNode.Value), bindingPropertyNode.Argument);
+                bindingPropertyNode = bindingPropertyNode.Caller;
             }
 
             var lambda = this.Provider == ProviderEnum.DbQueryProvider
                              ? this.PerformDynamicProjection(bindingNodes)
                              : this.PerformProjection(bindingNodes);
 
-            var result = this.BuildMethodCallExpression(MethodType.Select, left, lambda);
+            var result = this.BuildMethodCallExpression(NodeType.Select, left, lambda);
 
             this.ContextExpression.Push(result);
         }
@@ -248,117 +330,54 @@
             this.ContextExpression.Push(RootExpression);
         }
 
-        private Expression BuildBinaryExpression(BinaryType binary, Expression left, Expression right)
+        private Expression BuildBinaryExpression(NodeType binary, Expression left, Expression right)
         {
-            if (binary == BinaryType.And)
+            if (binary == NodeType.And)
             {
                 return Expression.AndAlso(left, right);
             }
 
-            if (binary == BinaryType.Or)
+            if (binary == NodeType.Or)
             {
                 return Expression.OrElse(left, right);
             }
 
-            if (binary == BinaryType.Equal)
+            if (binary == NodeType.Equal)
             {
                 return Expression.Equal(left, right);
             }
 
-            if (binary == BinaryType.NotEqual)
+            if (binary == NodeType.NotEqual)
             {
                 return Expression.NotEqual(left, right);
             }
 
-            if (binary == BinaryType.GreaterThan)
+            if (binary == NodeType.GreaterThan)
             {
                 return Expression.GreaterThan(left, right);
             }
 
-            if (binary == BinaryType.GreaterThanOrEqual)
+            if (binary == NodeType.GreaterThanOrEqual)
             {
                 return Expression.GreaterThanOrEqual(left, right);
             }
 
-            if (binary == BinaryType.LessThan)
+            if (binary == NodeType.LessThan)
             {
                 return Expression.LessThan(left, right);
             }
 
-            if (binary == BinaryType.LessThanOrEqual)
+            if (binary == NodeType.LessThanOrEqual)
             {
                 return Expression.LessThanOrEqual(left, right);
             }
 
-            if (binary == BinaryType.Contains)
-            {
-                if (left.Type != typeof(string))
-                {
-                    left = Expression.Call(left, "ToString", null);
-                }
-
-                return Expression.Call(left, Methods.Contains, (ConstantExpression)right);
-            }
-
-            if (binary == BinaryType.StartsWith)
-            {
-                if (left.Type != typeof(string))
-                {
-                    left = Expression.Call(left, "ToString", null);
-                }
-
-                return Expression.Call(left, Methods.StartsWith, (ConstantExpression)right);
-            }
-
-            if (binary == BinaryType.EndsWith)
-            {
-                if (left.Type != typeof(string))
-                {
-                    left = Expression.Call(left, "ToString", null);
-                }
-
-                return Expression.Call(left, Methods.EndsWith, (ConstantExpression)right);
-            }
-
-            if (binary == BinaryType.In)
-            {
-                var method = right.Type.GetTypeInfo().GetMethod("Contains");
-                return Expression.Call(right, method, left);
-            }
-
-            if (binary == BinaryType.NotIn)
-            {
-                var method = right.Type.GetTypeInfo().GetMethod("Contains");
-                var call = Expression.Call(right, method, left);
-                return Expression.Not(call);
-            }
-
-            if (binary == BinaryType.Take)
-            {
-                var types = new List<Type>
-                                {
-                                    left.Type.GetTypeInfo().IsGenericType
-                                        ? left.Type.GenericTypeArguments[0]
-                                        : left.Type
-                                };
-                return Expression.Call(typeof(Queryable), "Take", types.ToArray(), left, right);
-            }
-
-            if (binary == BinaryType.Skip)
-            {
-                var types = new List<Type>
-                                {
-                                    left.Type.GetTypeInfo().IsGenericType
-                                        ? left.Type.GenericTypeArguments[0]
-                                        : left.Type
-                                };
-                return Expression.Call(typeof(Queryable), "Skip", types.ToArray(), left, right);
-            }
+            
             throw new Exception(binary.ToString());
         }
 
         private MethodCallExpression BuildMethodCallExpression(
-            MethodType method,
+            NodeType method,
             Expression caller,
             LambdaExpression argument)
         {
@@ -369,16 +388,16 @@
                                     : caller.Type
                             };
 
-            if (method == MethodType.Any)
+            if (method == NodeType.Any)
             {
                 return Expression.Call(typeof(Enumerable), "Any", types.ToArray(), caller, argument);
             }
-            if (method == MethodType.Count)
+            if (method == NodeType.Count)
             {
                 return Expression.Call(typeof(Enumerable), "Count", types.ToArray(), caller, argument);
             }
 
-            if (method == MethodType.OrderBy || method == MethodType.OrderByDescending)
+            if (method == NodeType.OrderBy || method == NodeType.OrderByDescending)
             {
                 var methodName = method.ToString();
                 if (this.OderByCount > 0)
@@ -395,7 +414,7 @@
                     Expression.Quote(argument));
             }
 
-            if (method == MethodType.Where)
+            if (method == NodeType.Where)
             {
                 if (caller.Type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
@@ -404,7 +423,7 @@
                 return Expression.Call(typeof(Queryable), "Where", types.ToArray(), caller, Expression.Quote(argument));
             }
 
-            if (method == MethodType.Select)
+            if (method == NodeType.Select)
             {
                 types.Add(argument.ReturnType);
                 if (caller.Type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
