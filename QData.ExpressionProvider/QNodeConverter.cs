@@ -19,17 +19,17 @@ namespace QData.ExpressionProvider
 
     public class QNodeConverter
     {
-        private readonly IQueryable query;
+        private readonly IQueryable baseQuery;
 
-        public QNodeConverter(IQueryable query)
+        public QNodeConverter(IQueryable baseQuery)
         {
-            this.query = query;
+            this.baseQuery = baseQuery;
         }
 
         public Expression Convert(QNode descriptor)
         {
             QNode root = new PreConverter().Prepare(descriptor);
-            var converter = new Builder.QNodeConverter(this.query);
+            var converter = new Builder.QNodeConverter(this.baseQuery);
             root.Accept(converter);
             return converter.ContextExpression.Pop();
         }

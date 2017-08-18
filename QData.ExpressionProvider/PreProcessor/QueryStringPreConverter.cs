@@ -26,13 +26,13 @@
                 return whereNode;
             }
 
-            this.QueryStringParentNode.Caller = whereNode;
+            this.QueryStringParentNode.Operand = whereNode;
             return root;
         }
 
         private QNode ConvertQueryStringToWhere(QNode queryString)
         {
-            QNode where = new QNode() { Type = NodeType.Where, Caller = queryString.Caller };
+            QNode where = new QNode() { Type = NodeType.Where, Operand = queryString.Operand };
             var constant = new QNode() { Type = NodeType.Constant, Value = queryString.Argument.Value };
             var members = new List<QNode>();
             QNode temp = queryString.Argument.Argument;
@@ -51,7 +51,7 @@
                                       {
                                           Type = NodeType.Contains,
                                           Argument = constant,
-                                          Caller = members[i]
+                                          Operand = members[i]
                                       };
                 if (i == 0)
                 {
@@ -62,7 +62,7 @@
                     var orNode = new QNode()
                                      {
                                          Type = NodeType.Or,
-                                         Caller = predicate,
+                                         Operand = predicate,
                                          Argument = containNode
                                      };
                     predicate = orNode;
@@ -87,9 +87,9 @@
                 }
             }
             this.CurrentParentNode = node;
-            if (node.Caller != null)
+            if (node.Operand != null)
             {
-                this.Visit(node.Caller);
+                this.Visit(node.Operand);
             }
             if (node.Argument != null)
             {

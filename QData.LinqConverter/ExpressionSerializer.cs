@@ -173,7 +173,7 @@ namespace QData.LinqConverter
 
             var node = new QNode() { Type = op };
             this.Visit(expression.Left);
-            node.Caller = this.Context.Pop();
+            node.Operand = this.Context.Pop();
             this.Visit(expression.Right);
             node.Argument = this.Context.Pop();
 
@@ -257,7 +257,7 @@ namespace QData.LinqConverter
                 if (memberAccess.Expression.NodeType == ExpressionType.MemberAccess)
                 {
                     this.Visit(memberAccess.Expression);
-                    node.Caller = this.Context.Pop();
+                    node.Operand = this.Context.Pop();
                     this.Context.Push(node);
                 }
                 else
@@ -301,7 +301,7 @@ namespace QData.LinqConverter
                 }
                 else
                 {
-                    lambdaNode.Caller = node;
+                    lambdaNode.Operand = node;
                 }
             }
 
@@ -339,7 +339,7 @@ namespace QData.LinqConverter
                         ((MemberExpression)m.Arguments[0]).Expression.Type))
                     {
                         this.Visit(m.Object);
-                        node.Caller = this.Context.Pop();
+                        node.Operand = this.Context.Pop();
                         this.Visit(m.Arguments[0]);
                         node.Argument = this.Context.Pop();
                     }
@@ -356,7 +356,7 @@ namespace QData.LinqConverter
                         }
                         
                         this.Visit(m.Arguments[0]);
-                        node.Caller = this.Context.Pop();
+                        node.Operand = this.Context.Pop();
                         this.Visit(m.Object);
                         node.Argument = this.Context.Pop();
                     }
@@ -364,7 +364,7 @@ namespace QData.LinqConverter
                 else
                 {
                     this.Visit(m.Object);
-                    node.Caller = this.Context.Pop();
+                    node.Operand = this.Context.Pop();
                     if (m.Arguments.Count > 0)
                     {
                         this.Visit(m.Arguments[0]);
@@ -375,7 +375,7 @@ namespace QData.LinqConverter
             else
             {
                 this.Visit(m.Arguments[0]);
-                node.Caller = this.Context.Pop();
+                node.Operand = this.Context.Pop();
                 if (m.Arguments.Count == 2)
                 {
                     this.Visit(m.Arguments[1]);
@@ -466,7 +466,7 @@ namespace QData.LinqConverter
                 }
                 else
                 {
-                    lambdaNode.Caller = node;
+                    lambdaNode.Operand = node;
                 }
             }
 

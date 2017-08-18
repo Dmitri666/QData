@@ -74,7 +74,7 @@ namespace QData.ExpressionProvider.Builder
 
         private static void AcceptBinary(QNode node, QNodeConverter visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             if (node.Argument.Type == NodeType.Constant)
             {
                 visitor.SetBinaryConstantConverter(node);
@@ -87,7 +87,7 @@ namespace QData.ExpressionProvider.Builder
 
         private static void AcceptMember(QNode node, QNodeConverter visitor)
         {
-            node.Caller?.Accept(visitor);
+            node.Operand?.Accept(visitor);
             visitor.VisitMember(node);
         }
 
@@ -98,7 +98,7 @@ namespace QData.ExpressionProvider.Builder
 
         public static void AcceptLambdaArgumentMethod(QNode node, QNodeConverter visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             visitor.EnterContext(node);
             node.Argument.Accept(visitor);
             visitor.VisitLambdaMethod(node);
@@ -107,7 +107,7 @@ namespace QData.ExpressionProvider.Builder
 
         public static void AcceptValueArgumentMethod(QNode node, QNodeConverter visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             if (node.Argument.Type == NodeType.Constant)
             {
                 visitor.SetMethodConstantConverter(node);
@@ -118,13 +118,13 @@ namespace QData.ExpressionProvider.Builder
 
         public static void AcceptEmptyMethod(QNode node, QNodeConverter visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             visitor.VisitEmptyMethod(node);
         }
 
         public static void AcceptProjection(QNode node, QNodeConverter visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             visitor.EnterContext(node);
             visitor.VisitProjection(node);
             visitor.LeaveContext(node);

@@ -48,7 +48,7 @@
 
         private static void AcceptBinary(QNode node, IQNodeVisitor visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             node.Argument.Accept(visitor);
             visitor.VisitBinary(node);
         }
@@ -67,7 +67,7 @@
 
         public static void AcceptMethod(QNode node, IQNodeVisitor visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             node.Argument.Accept(visitor);
             visitor.VisitMethod(node);
             
@@ -75,13 +75,13 @@
 
         public static void AcceptEmptyMethod(QNode node, IQNodeVisitor visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             visitor.VisitEmptyMethod(node);
         }
 
         public static void AcceptProjection(QNode node, IQNodeVisitor visitor)
         {
-            node.Caller.Accept(visitor);
+            node.Operand.Accept(visitor);
             visitor.VisitProjection(node);
             }
 

@@ -43,7 +43,7 @@ namespace QData.LinqConverter
                 }
             }
             queryString.Argument.Argument = first;
-            queryString.Caller = this.query;
+            queryString.Operand = this.query;
             this.query = queryString;
             return this;
         }

@@ -20,14 +20,13 @@ namespace QData.ExpressionProvider.Builder
         /// </summary>
         private int _parameterPrefix;
 
-        public QNodeConverter(IQueryable query)
+        public QNodeConverter(IQueryable baseQuery)
         {
             this.ContextExpression = new Stack<Expression>();
             this.ContextParameters = new Stack<ParameterExpression>();
-            this.RootExpression = query.Expression;
-            var providerType = query.Provider.GetType();
-            this.Provider = providerType.Name.Contains("DbQueryProvider")
-                                ? ProviderEnum.DbQueryProvider
+            this.RootExpression = baseQuery.Expression;
+            var providerType = baseQuery.Provider.GetType().BaseType;
+            this.Provider = providerType != typeof(EnumerableQuery) ? ProviderEnum.DbQueryProvider
                                 : ProviderEnum.EnumerableQueryProvider;
         }
 
@@ -218,7 +217,7 @@ namespace QData.ExpressionProvider.Builder
         public void VisitMember(QNode node)
         {
             this.ContextExpression.Push(
-                node.Caller == null
+                node.Operand == null
                     ? Expression.PropertyOrField(this.ContextParameters.Peek(), Convert.ToString(node.Value))
                     : Expression.PropertyOrField(this.ContextExpression.Pop(), Convert.ToString(node.Value)));
         }
@@ -313,7 +312,7 @@ namespace QData.ExpressionProvider.Builder
             while (bindingPropertyNode != null)
             {
                 bindingNodes.Add(Convert.ToString(bindingPropertyNode.Value), bindingPropertyNode.Argument);
-                bindingPropertyNode = bindingPropertyNode.Caller;
+                bindingPropertyNode = bindingPropertyNode.Operand;
             }
 
             var lambda = this.Provider == ProviderEnum.DbQueryProvider
