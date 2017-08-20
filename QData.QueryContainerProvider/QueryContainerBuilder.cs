@@ -24,7 +24,8 @@ namespace QData.QueryContainerProvider
         {
             var converter = new QNodeConverter<T>();
             descriptor.Accept(converter);
-            var result = this.client.Search<T>(s => s.Sort(converter.Sorting).Query(converter.Query));
+            var result = this.client.Search<T>(converter.Query);
+            //this.client.Count<T>(c => c.Query(converter.Query));
             var info = result.DebugInformation;
                  
             return result.Documents;

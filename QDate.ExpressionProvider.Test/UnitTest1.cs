@@ -32,8 +32,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().Where(x => x.Vorname.Contains("a"));
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -44,8 +44,8 @@ namespace QDate.ExpressionProvider.Test
             var list = new List<string>() { "Hans" , "Dirk" };
             var query = new EnumerableSource<PersonDto>().Where(x => list.Contains(x.Vorname));
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -55,8 +55,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().Where(x => x.Vorname.StartsWith("a"));
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -66,8 +66,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().Where(x => x.Vorname.EndsWith("a"));
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -77,8 +77,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().Where(x => x.Vorname.EndsWith("a")).OrderBy(x => x.Vorname).Take(1);
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -88,8 +88,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().Where(x => x.Vorname.EndsWith("a")).OrderBy(x => x.Vorname).Skip(1); 
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -99,8 +99,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().Where(x => x.Mitarbeiters.Count > 0);
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -110,8 +110,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().QueryString("a",dto => new object[] {dto.Vorname,dto.Nachname}).Where(x => x.Mitarbeiters.Count > 0);
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -121,8 +121,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var query = new EnumerableSource<PersonDto>().QueryString("a", dto => new object[] { dto.Vorname, dto.Nachname, dto.Leiter.Vorname });
             var node = query.Serialize();
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(), node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }
@@ -132,8 +132,8 @@ namespace QDate.ExpressionProvider.Test
         {
             var source = new DynamicSource().QueryString("a", new List<string>() { "Vorname" , "Nachname" , "Leiter.Vorname" });
             var node = source.Query;
-            var converter = new QNodeConverter(this.persons.AsQueryable());
-            var expression = converter.Convert(node);
+            var converter = new QNodeConverter();
+            var expression = converter.Convert(this.persons.AsQueryable(),node);
             var result = this.persons.AsQueryable().Execute(expression);
 
         }

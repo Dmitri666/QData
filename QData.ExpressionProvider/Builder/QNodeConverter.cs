@@ -20,7 +20,8 @@ namespace QData.ExpressionProvider.Builder
         /// </summary>
         private int _parameterPrefix;
 
-        public QNodeConverter(IQueryable baseQuery)
+        private QNodeConverterSettings Settings { get; set; }
+        public QNodeConverter(IQueryable baseQuery, QNodeConverterSettings settings)
         {
             this.ContextExpression = new Stack<Expression>();
             this.ContextParameters = new Stack<ParameterExpression>();
@@ -28,6 +29,7 @@ namespace QData.ExpressionProvider.Builder
             var providerType = baseQuery.Provider.GetType().BaseType;
             this.Provider = providerType != typeof(EnumerableQuery) ? ProviderEnum.DbQueryProvider
                                 : ProviderEnum.EnumerableQueryProvider;
+            this.Settings = settings;
         }
 
         /// <summary>

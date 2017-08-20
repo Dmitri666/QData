@@ -28,6 +28,7 @@ namespace QData.QueryContainerProvider.Test
             var connectionSettings =
                      new ConnectionSettings(new Uri("http://localhost:9200")).DefaultIndex("index");
             connectionSettings.DisableDirectStreaming();
+            //connectionSettings.MapDefaultTypeNames(dictionary => )
             client = new ElasticClient(connectionSettings);
             persons = new List<TestIndex>();
             persons.Add(new TestIndex() { Id = 1, Vorname = "Otto", Nachname = "Fuchs" ,Age = 34 });
@@ -37,13 +38,9 @@ namespace QData.QueryContainerProvider.Test
             persons.Add(new TestIndex() { Id = 5, Vorname = "Alex", Nachname = "Goldberg", Age = 31 });
             client.Bulk(descriptor =>
             {
-                return descriptor.CreateMany<TestIndex>(persons, (createDescriptor, index) =>
+                return descriptor.IndexMany<TestIndex>(persons, (createDescriptor, index) =>
                 {
-                    foreach (var person in persons)
-                    {
-                        createDescriptor.Document(person);
-                    }
-                    return createDescriptor;
+                    return createDescriptor.Document(index);
                 });
             });
         }
@@ -52,7 +49,7 @@ namespace QData.QueryContainerProvider.Test
         public void TestMethod1()
         {
             
-            
+
             var set = new EnumerableSource<TestIndex>();
             var query = set.Where(x => x.Vorname == "Dirk" || x.Nachname.Contains("b"));
             var node = query.Serialize();
@@ -68,7 +65,7 @@ namespace QData.QueryContainerProvider.Test
             Expression<Func<TestIndex, bool>> predicate =
                 (x) =>
                     (x.Vorname == "Dirk" && x.Nachname == "Fischer") ||
-                    (x.Nachname.Contains("m") && x.Vorname.Contains("n"));
+                    (x.Nachname.Contains("M") && x.Vorname.Contains("n"));
 
             var set = new EnumerableSource<TestIndex>();
             var query = set.Where(predicate);
@@ -76,7 +73,7 @@ namespace QData.QueryContainerProvider.Test
             var d = new QueryContainerBuilder(client);
             var result = d.Convert<TestIndex>(node).ToList().OrderBy(x => x.Nachname).OrderBy(x => x.Vorname).ToList();
 
-            var source = this.persons.Where(x => (x.Vorname == "Dirk" && x.Nachname == "Fischer") || (x.Nachname.ToLower().Contains("m") && x.Vorname.ToLower().Contains("n"))).OrderBy(x => x.Nachname).OrderBy(x => x.Vorname).ToList();
+            var source = this.persons.Where(predicate.Compile()).OrderBy(x => x.Nachname).OrderBy(x => x.Vorname).ToList();
             Assert.AreEqual(result.Count, source.Count());
             for (int i = 0; i < result.Count; i++)
             {

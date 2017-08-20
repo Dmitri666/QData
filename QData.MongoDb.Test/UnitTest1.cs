@@ -71,10 +71,10 @@ namespace QData.MongoDb.Test
                 }
             }
 
-            (this.customers[0].Childs as List<Contract>).Add(this.contracts[0]);
-            (this.customers[0].Childs as List<Contract>).Add(this.contracts[1]);
-            (this.customers[0].Childs as List<Contract>).Add(this.contracts[3]);
-            (this.customers[1].Childs as List<Contract>).Add(this.contracts[2]);
+            (this.customers[0].Contracts as List<Contract>).Add(this.contracts[0]);
+            (this.customers[0].Contracts as List<Contract>).Add(this.contracts[1]);
+            (this.customers[0].Contracts as List<Contract>).Add(this.contracts[3]);
+            (this.customers[1].Contracts as List<Contract>).Add(this.contracts[2]);
 
             this.baseCustomerQuery = customerCollection.AsQueryable();
             this.baseContractQuery = contractsCollection.AsQueryable();
@@ -88,10 +88,10 @@ namespace QData.MongoDb.Test
             var query = new EnumerableSource<Customer>().Where(x => x.Vorname.Contains("a"));
             var node = query.Serialize();
             
-            var sourceExpression = new QNodeConverter(this.baseCustomerQuery).Convert(node);
+            var sourceExpression = new QNodeConverter().Convert(this.baseCustomerQuery,node);
             var source = this.baseCustomerQuery.Execute(sourceExpression) as List<Customer>;
 
-            var targetExpression = new QNodeConverter(this.customers.AsQueryable()).Convert(node);
+            var targetExpression = new QNodeConverter(new QNodeConverterSettings() {QueryStringIgnoreCase = false }).Convert(this.customers.AsQueryable(), node);
             var target = this.customers.AsQueryable().Execute(targetExpression) as List<Customer>;
 
             Assert.AreEqual(target.Count, source.Count);
@@ -109,10 +109,10 @@ namespace QData.MongoDb.Test
             var query = new EnumerableSource<Customer>().Select(x => new { name = x.Vorname});
             var node = query.Serialize();
             
-            var sourceExpression = new QNodeConverter(this.baseCustomerQuery).Convert(node);
+            var sourceExpression = new QNodeConverter().Convert(this.baseCustomerQuery,node);
             var source = this.baseCustomerQuery.Execute(sourceExpression);
 
-            var targetExpression = new QNodeConverter(this.customers.AsQueryable()).Convert(node);
+            var targetExpression = new QNodeConverter().Convert(this.customers.AsQueryable(),node);
             var target = this.customers.AsQueryable().Execute(targetExpression);
 
             //Assert.AreEqual(target.Count, source.Count);
@@ -134,13 +134,12 @@ namespace QData.MongoDb.Test
                                                                                                                            Vorname = cust.Vorname,
                                                                                                                            Nachname = cust.Nachname,
                                                                                                                            Age = cust.Age,
-                                                                                                                           Childs = joined
+                                                                                                                           Contracts = joined
                                                                                                                        };
             //var r = joinQuery.ToList();
-            var query = new EnumerableSource<Customer>().Where(x => x.Childs.Any(c => c.Descriptions.Contains("test"))).OrderByDescending(x => x.Nachname);
+            var query = new EnumerableSource<Customer>().Where(x => x.Contracts.Any(c => c.Descriptions.Contains("test"))).OrderByDescending(x => x.Nachname);
             var node = query.Serialize();
-            var converter = new QNodeConverter(joinQuery);
-            var expression = converter.Convert(node);
+            var expression = new QNodeConverter().Convert(joinQuery,node);
             var target = joinQuery.Execute(expression) as List<Customer>;
             var source = this.customers.AsQueryable().Execute(expression) as List<Customer>;
 
