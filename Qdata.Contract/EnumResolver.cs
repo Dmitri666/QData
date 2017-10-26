@@ -47,6 +47,7 @@ namespace Qdata.Contract
                 case NodeType.EndsWith:
                 case NodeType.Take:
                 case NodeType.Skip:
+                case NodeType.ToLower:
                     return NodeGroup.Method;
                 case NodeType.Constant:
                     return NodeGroup.Constant;

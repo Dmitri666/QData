@@ -26,9 +26,18 @@ namespace QData.ExpressionProvider.Builder
             this.ContextExpression = new Stack<Expression>();
             this.ContextParameters = new Stack<ParameterExpression>();
             this.RootExpression = baseQuery.Expression;
-            var providerType = baseQuery.Provider.GetType().BaseType;
-            this.Provider = providerType != typeof(EnumerableQuery) ? ProviderEnum.DbQueryProvider
-                                : ProviderEnum.EnumerableQueryProvider;
+            var providerType = baseQuery.Provider.GetType();
+            if (providerType.Name.Contains("MongoQueryProviderImpl"))
+            {
+                this.Provider = ProviderEnum.MongoDbProvider;
+            }
+            else
+            {
+                providerType = providerType.BaseType;
+                this.Provider = providerType != typeof(EnumerableQuery) ? ProviderEnum.DbQueryProvider
+                                    : ProviderEnum.EnumerableQueryProvider;
+            }
+            
             this.Settings = settings;
         }
 
@@ -201,6 +210,11 @@ namespace QData.ExpressionProvider.Builder
             {
                 var toStringMethod = typeof(object).GetMethod("ToString", new Type[] { });
                 var exp = Expression.Call(left, toStringMethod, null);
+                this.ContextExpression.Push(exp);
+            }
+            else if (method == NodeType.ToLower)
+            {
+                var exp = Expression.Call(left, Methods.ToLower, null);
                 this.ContextExpression.Push(exp);
             }
             else

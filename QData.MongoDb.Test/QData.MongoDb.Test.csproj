@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Contract.cs" />
     <Compile Include="Customer.cs" />
+    <Compile Include="UnitTest2.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -9,6 +9,7 @@ namespace QData.ExpressionProvider.Builder
     public enum ProviderEnum
     {
         DbQueryProvider,
+        MongoDbProvider,
         EnumerableQueryProvider
     }
 }

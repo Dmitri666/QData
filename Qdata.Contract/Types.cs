@@ -37,7 +37,8 @@
         NotEqual = 22,
         Querable = 23,
         Member = 24,
-        Constant = 25
+        Constant = 25,
+        ToLower = 26
 
     }
 

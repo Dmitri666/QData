@@ -48,6 +48,7 @@ namespace QData.ExpressionProvider.Builder
                         AcceptValueArgumentMethod(node, visitor);
                         break;
                     case NodeType.ToString:
+                    case NodeType.ToLower:
                         AcceptEmptyMethod(node, visitor);
                         break;
                     case NodeType.Count:
